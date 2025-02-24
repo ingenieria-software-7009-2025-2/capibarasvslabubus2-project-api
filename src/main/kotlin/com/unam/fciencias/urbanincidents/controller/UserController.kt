@@ -35,9 +35,14 @@ class UserController {
         TODO("Por implementar")
     }
 
-    // Endpoint to retrieve user information
+    /**
+     * Endpoint to retrieve user information.
+     * This method handles HTTP GET requests to fetch the details from a user.
+     *
+     * @return a User object with the hardcoded information of a user.
+     */
     @GetMapping("/me")
-    fun getUserInfo(): ResponseEntity<User> {
-        TODO("Por implementar")
+    fun getUserInfo(): User {
+        return User(email = "usuario@ejemplo.com", password = "pass123", token = "t123")
     }
 }

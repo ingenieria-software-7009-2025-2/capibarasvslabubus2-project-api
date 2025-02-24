@@ -22,17 +22,35 @@ class UserController {
         return ResponseEntity.ok(myUser)
     }
 
-    // Endpoint for user login
+    /**
+     * Endpoint for user login.
+     * This method handles HTTP POST requests to give a user access into their account.
+     * @param loginRequest A JSON with the fields of mail and password.
+     * @return ResponseEntity containing the created User object in the response body
+     *         with HTTP status 200 (OK).
+     */
     @PostMapping("/login")
     fun loginUser(@RequestBody loginRequest: Map<String, String>): ResponseEntity<User> {
-        TODO("Por implementar")
+        var mail = "no email received"
+        if(loginRequest.containsKey("email"))
+            mail = loginRequest["email"].toString()
+        var password = "no password received"
+        if(loginRequest.containsKey("password"))
+            password = loginRequest["password"].toString()
+        val myUser = User(mail, password, "random user")
+        return ResponseEntity.ok(myUser)
 
     }
 
-    // Endpoint for user logout
+    /**
+     * Endpoint for user logout.
+     * This method handles HTTP POST requests to close a user session.
+     * @return ResponseEntity containing a message confirming closed session
+     *         with HTTP status 200 (OK).
+     */
     @PostMapping("/logout")
     fun logoutUser(): ResponseEntity<String> {
-        TODO("Por implementar")
+        return ResponseEntity.ok("sesión cerrada")
     }
 
     /**

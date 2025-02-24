@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "1c879a2a-a2ec-42f4-9e2e-e645e835ff4a",
+		"_postman_id": "906b8935-4c27-4459-9331-b58fd0f6c557",
 		"name": "endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "42567591"
+		"_exporter_id": "42582101"
 	},
 	"item": [
 		{
@@ -87,6 +87,30 @@
 						"v1",
 						"users",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/v1/users/me",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/users/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"users",
+						"me"
 					]
 				}
 			},

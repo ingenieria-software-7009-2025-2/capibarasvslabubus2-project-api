@@ -50,7 +50,7 @@ class UserController {
      */
     @PostMapping("/logout")
     fun logoutUser(): ResponseEntity<String> {
-        return ResponseEntity.ok("sesión cerrada")
+        return ResponseEntity.ok("Sesión cerrada")
     }
 
     /**

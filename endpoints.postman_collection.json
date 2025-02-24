@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "46d9f49d-b6aa-4fef-94aa-24d33c0505e5",
+		"_postman_id": "1c879a2a-a2ec-42f4-9e2e-e645e835ff4a",
 		"name": "endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "42566108"
+		"_exporter_id": "42567591"
 	},
 	"item": [
 		{
@@ -30,6 +30,63 @@
 					"path": [
 						"v1",
 						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/v1/users/logout",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/users/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"users",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/v1/users/login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"user@example.com\",\r\n  \"password\": \"passw\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/users/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"users",
+						"login"
 					]
 				}
 			},

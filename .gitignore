@@ -7,14 +7,18 @@ HELP.md
 /bin/
 
 ### Dependencias y configuración de Maven ###
-/.mvn/
-!mvnw
-!mvnw.cmd
+target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
-dependency-reduced-pom.xml
+pom.xml.next
 release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
 
 ### Configuración de IDEs (Spring Tool Suite, IntelliJ, VS Code, Eclipse) ###
 .idea/

@@ -1,12 +1,16 @@
 package com.unam.fciencias.urbanincidents.controller
 
+import com.unam.fciencias.urbanincidents.model.CreateUser
 import com.unam.fciencias.urbanincidents.model.User
+import com.unam.fciencias.urbanincidents.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/v1/users")
-class UserController {
+class UserController(
+    private val userService: UserService
+) {
 
     /**
      * Endpoint for creating a new user.
@@ -17,8 +21,8 @@ class UserController {
      *         with HTTP status 200 (OK).
      */
     @PostMapping
-    fun createUser(@RequestBody user: User): ResponseEntity<User> {
-        val myUser = User(user.email, user.password, user.token)
+    fun createUser(@RequestBody user: CreateUser): ResponseEntity<User> {
+        val myUser = userService.createUser(user)
         return ResponseEntity.ok(myUser)
     }
 
@@ -37,7 +41,7 @@ class UserController {
         var password = "no password received"
         if(loginRequest.containsKey("password"))
             password = loginRequest["password"].toString()
-        val myUser = User(mail, password, "random user")
+        val myUser = User(null, mail, password, "random user")
         return ResponseEntity.ok(myUser)
 
     }
@@ -61,6 +65,6 @@ class UserController {
      */
     @GetMapping("/me")
     fun getUserInfo(): User {
-        return User(email = "usuario@ejemplo.com", password = "pass123", token = "t123")
+        return User(null, email = "usuario@ejemplo.com", password = "pass123", token = "t123")
     }
 }

@@ -1,33 +1,56 @@
+### Archivos de ayuda y compilación ###
 HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### STS ###
+### Directorios de compilación ###
+/target/
+/out/
+/bin/
+
+### Dependencias y configuración de Maven ###
+/.mvn/
+!mvnw
+!mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+release.properties
+
+### Configuración de IDEs (Spring Tool Suite, IntelliJ, VS Code, Eclipse) ###
+.idea/
+.vscode/
+*.sublime-workspace
+*.iws
+*.iml
+*.ipr
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
+.springBeans/
+.sts4-cache/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+### Archivos de entorno y configuración ###
+.env
+.env.local
+*.log
+*.swp
+.DS_Store
+Thumbs.db
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+### Archivos de caché de Kotlin ###
+*.class
+*.jar
+*.war
+*.ear
+*.kt~
+/kotlin/
+/test-results/
+*.coverage
+jacoco.exec
 
-### VS Code ###
-.vscode/
+### Archivos específicos de MongoDB ###
+/data/db/
+mongod.lock
+mongod.pid

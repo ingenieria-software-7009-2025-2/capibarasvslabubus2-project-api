@@ -13,4 +13,14 @@ class UserService(
         val user = User(id = null, email = request.email, password = request.password, token = request.token)
         return userRepository.save(user)
     }
+    fun loginUser(loginRequest: Map<String, String>): User? {
+        if(loginRequest["email"] != null && loginRequest["password"] != null) {
+            val user = userRepository.findByEmailAndPassword(
+                loginRequest["email"].toString(),
+                loginRequest["password"].toString()
+            ) ?: return null
+            return user
+        }
+        return null
+    }
 }

@@ -34,16 +34,9 @@ class UserController(
      *         with HTTP status 200 (OK).
      */
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginRequest: Map<String, String>): ResponseEntity<User> {
-        var mail = "no email received"
-        if(loginRequest.containsKey("email"))
-            mail = loginRequest["email"].toString()
-        var password = "no password received"
-        if(loginRequest.containsKey("password"))
-            password = loginRequest["password"].toString()
-        val myUser = User(null, mail, password, "random user")
+    fun loginUser(@RequestBody loginRequest: Map<String, String>): ResponseEntity<User?> {
+        val myUser = userService.loginUser(loginRequest)
         return ResponseEntity.ok(myUser)
-
     }
 
     /**

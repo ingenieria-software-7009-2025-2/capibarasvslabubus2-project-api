@@ -2,6 +2,7 @@ package com.unam.fciencias.urbanincidents.controller
 
 import com.unam.fciencias.urbanincidents.model.CreateUser
 import com.unam.fciencias.urbanincidents.model.User
+import com.unam.fciencias.urbanincidents.controller.body.UpdateUserRequest
 import com.unam.fciencias.urbanincidents.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -66,5 +67,26 @@ class UserController(
     @GetMapping("/me")
     fun getUserInfo(): User {
         return User(null, email = "usuario@ejemplo.com", password = "pass123", token = "t123")
+    }
+
+
+    @PutMapping("/me")
+    fun updateCurrentUser(
+        @RequestHeader("Authorization") token: String?,
+        @RequestBody updateRequest:  UpdateUserRequest
+    ): ResponseEntity<User> {
+        if (token.isNullOrEmpty()) {
+            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+            return ResponseEntity.status(401).build()
+        }
+
+        val updatedUser = userService.updateUserByToken(token, updateRequest)
+
+        return if (updatedUser != null) {
+            ResponseEntity.ok(updatedUser)
+        } else {
+            ResponseEntity.status(404).build()
+        }
+
     }
 }

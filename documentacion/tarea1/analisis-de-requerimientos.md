@@ -8,7 +8,7 @@ Integrantes:
 - Figueroa Barrientos Andrea Valeria
 - Morales Chaparro Gael Antonio
 - Ortiz Cervantes Leonardo Rafael
-- Rivera Lara Sandra Valeria.
+- Rivera Lara Sandra Valeria
 
 ## 1. Introducción
 

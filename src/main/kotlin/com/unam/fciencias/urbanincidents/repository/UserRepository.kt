@@ -9,6 +9,8 @@ interface UserRepository : MongoRepository<User, String>{
     // Método para buscar un usuario por token
     fun findByToken(token: String): User?
 
+    fun findByEmailAndPassword(email: String, password: String): User?
+
     // Método para actualizar email por ID
     @Query("{ 'id' : ?0 }")
     @Update("{ '\$set' : { 'email' : ?1 } }")
@@ -18,4 +20,8 @@ interface UserRepository : MongoRepository<User, String>{
     @Query("{ 'id' : ?0 }")
     @Update("{ '\$set' : { 'password' : ?1 } }")
     fun updatePasswordById(id: String, password: String)
+
+    @Query("{ 'id' : ?0 }")
+    @Update("{ '\$set' : { 'token' : ?1 } }")
+    fun updateTokenById(id: String, token: String)
 }

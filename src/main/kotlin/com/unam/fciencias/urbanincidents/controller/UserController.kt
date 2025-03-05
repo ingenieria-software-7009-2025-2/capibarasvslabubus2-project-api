@@ -30,13 +30,16 @@ class UserController(
      * Endpoint for user login.
      * This method handles HTTP POST requests to give a user access into their account.
      * @param loginRequest A JSON with the fields of mail and password.
-     * @return ResponseEntity containing the created User object in the response body
-     *         with HTTP status 200 (OK).
+     * @return ResponseEntity containing the found user with the token updated in HTTP
+     *         status 200 (OK). Otherwise, with HTTP status 404 and not found.
      */
     @PostMapping("/login")
     fun loginUser(@RequestBody loginRequest: Map<String, String>): ResponseEntity<User?> {
         val myUser = userService.loginUser(loginRequest)
-        return ResponseEntity.ok(myUser)
+        return if (myUser == null)
+            ResponseEntity.notFound().build()
+        else
+            ResponseEntity.ok(myUser)
     }
 
     /**

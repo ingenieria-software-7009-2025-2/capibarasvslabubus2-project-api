@@ -5,6 +5,8 @@ import com.unam.fciencias.urbanincidents.model.User
 import com.unam.fciencias.urbanincidents.repository.UserRepository
 import org.springframework.stereotype.Service
 import com.unam.fciencias.urbanincidents.controller.body.UpdateUserRequest
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 @Service
 class UserService(
@@ -29,10 +31,17 @@ class UserService(
             userRepository.updatePasswordById(user.id, updateRequest.password)
         }
 
-
-
         // Buscar y devolver el usuario actualizado
         return userRepository.findByToken(token)
+    }
+
+
+    fun getUser(token: String?): User {
+        if (token.isNullOrBlank()) {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token no proporcionado")
+        }
+        val user = userRepository.findByToken(token) ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token inválido")
+        return user
     }
 
 }

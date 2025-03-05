@@ -19,6 +19,3 @@ interface UserRepository : MongoRepository<User, String>{
     @Update("{ '\$set' : { 'password' : ?1 } }")
     fun updatePasswordById(id: String, password: String)
 }
-
-
-

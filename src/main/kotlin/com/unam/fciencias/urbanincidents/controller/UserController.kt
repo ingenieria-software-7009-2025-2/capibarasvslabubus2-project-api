@@ -64,7 +64,8 @@ class UserController(
      * @return a User object with the hardcoded information of a user.
      */
     @GetMapping("/me")
-    fun getUserInfo(): User {
-        return User(null, email = "usuario@ejemplo.com", password = "pass123", token = "t123")
+    fun getUserInfo(@RequestHeader("Authorization") token: String?): ResponseEntity<User> {
+        val user = userService.getUser(token)
+        return ResponseEntity.ok(user)
     }
 }

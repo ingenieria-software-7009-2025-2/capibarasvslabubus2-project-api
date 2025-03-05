@@ -1,6 +1,7 @@
 package com.unam.fciencias.urbanincidents.service
 
 import com.unam.fciencias.urbanincidents.model.CreateUser
+import com.unam.fciencias.urbanincidents.model.LoginRequest
 import com.unam.fciencias.urbanincidents.model.User
 import com.unam.fciencias.urbanincidents.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -16,30 +17,26 @@ class UserService(
     }
 
     /**
-     * Endpoint for user login.
-     * This method handles HTTP POST requests to give a user access into their account.
-     * @param loginRequest A JSON with the fields of mail and password.
-     * @return ResponseEntity containing the found user with the token updated in HTTP
-     *         status 200 (OK). Otherwise, with HTTP status 404 and not found.
+     * This method finds a user by email and password, then updates their token to login.
+     * @param loginRequest with the fields of mail and password.
+     * @return the user updated if is found, otherwise returns null.
      */
-    fun loginUser(loginRequest: Map<String, String>): User? {
-        if(loginRequest["email"] != null && loginRequest["password"] != null) {
-            // Search user
-            val user = userRepository.findByEmailAndPassword(
-                loginRequest["email"].toString(),
-                loginRequest["password"].toString()
-            ) ?: return null
-            // Update token
-            val token = UUID.randomUUID().toString()
-            userRepository.updateTokenById(user.id.toString(), token)
-            val myUser = User(
-                id = user.id.toString(),
-                email = user.email,
-                token = token,
-                password = user.password
-            )
-            return myUser
-        }
-        return null
+    fun loginUser(loginRequest: LoginRequest): User? {
+        // Search user
+        val user = userRepository.findByEmailAndPassword(
+            loginRequest.email,
+            loginRequest.password
+        ) ?: return null
+        // Update token
+        val token = UUID.randomUUID().toString()
+        userRepository.updateTokenById(user.id.toString(), token)
+        // Return user with new token
+        val myUser = User(
+            id = user.id.toString(),
+            email = user.email,
+            token = token,
+            password = user.password
+        )
+        return myUser
     }
 }

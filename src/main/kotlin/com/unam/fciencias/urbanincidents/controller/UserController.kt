@@ -1,6 +1,7 @@
 package com.unam.fciencias.urbanincidents.controller
 
 import com.unam.fciencias.urbanincidents.model.CreateUser
+import com.unam.fciencias.urbanincidents.model.LoginRequest
 import com.unam.fciencias.urbanincidents.model.User
 import com.unam.fciencias.urbanincidents.service.UserService
 import org.springframework.http.ResponseEntity
@@ -34,7 +35,7 @@ class UserController(
      *         status 200 (OK). Otherwise, with HTTP status 404 and not found.
      */
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginRequest: Map<String, String>): ResponseEntity<User?> {
+    fun loginUser(@RequestBody loginRequest: LoginRequest): ResponseEntity<User?> {
         val myUser = userService.loginUser(loginRequest)
         return if (myUser == null)
             ResponseEntity.notFound().build()

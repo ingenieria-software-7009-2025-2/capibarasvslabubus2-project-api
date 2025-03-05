@@ -32,14 +32,14 @@ class UserService(
             // Update token
             val token = UUID.randomUUID().toString()
             userRepository.updateTokenById(user.id.toString(), token)
-            User(
+            val myUser = User(
                 id = user.id.toString(),
                 email = user.email,
                 token = token,
                 password = user.password
             )
-            return user
+            return myUser
         }
-        return  null
+        return null
     }
 }

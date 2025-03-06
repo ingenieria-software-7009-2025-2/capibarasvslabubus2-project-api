@@ -4,6 +4,7 @@ import com.unam.fciencias.urbanincidents.user.model.CreateUser
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
 import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.controller.body.UpdateUserRequest
+import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

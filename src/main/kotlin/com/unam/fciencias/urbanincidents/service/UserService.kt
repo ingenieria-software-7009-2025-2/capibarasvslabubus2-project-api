@@ -43,6 +43,17 @@ class UserService(
         return myUser
     }
 
+    /**
+     * This method finds a user by token, then invalidates the token to logout.
+     * @param token the token of the user that is closing session.
+     * @return true if the user was found.
+     */
+    fun logoutUser(token: String): Boolean {
+        val userFound = userRepository.findByToken(token);
+        if(userFound != null)
+            userRepository.updateTokenById(userFound.id.toString(), "")
+        return (userFound != null)
+    }
 
     fun updateUserByToken(token: String, updateRequest: UpdateUserRequest): User? {
         // Buscar usuario por token

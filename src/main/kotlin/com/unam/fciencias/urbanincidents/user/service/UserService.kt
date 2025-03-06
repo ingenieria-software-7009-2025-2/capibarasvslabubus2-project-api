@@ -1,11 +1,11 @@
-package com.unam.fciencias.urbanincidents.service
+package com.unam.fciencias.urbanincidents.user.service
 
-import com.unam.fciencias.urbanincidents.model.CreateUser
-import com.unam.fciencias.urbanincidents.model.LoginRequest
-import com.unam.fciencias.urbanincidents.model.User
-import com.unam.fciencias.urbanincidents.repository.UserRepository
+import com.unam.fciencias.urbanincidents.user.model.CreateUser
+import com.unam.fciencias.urbanincidents.user.model.LoginRequest
+import com.unam.fciencias.urbanincidents.user.model.User
+import com.unam.fciencias.urbanincidents.user.repository.UserRepository
+import com.unam.fciencias.urbanincidents.user.controller.body.UpdateUserRequest
 import org.springframework.stereotype.Service
-import com.unam.fciencias.urbanincidents.controller.body.UpdateUserRequest
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import java.util.UUID

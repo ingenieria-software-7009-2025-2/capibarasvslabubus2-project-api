@@ -1,6 +1,6 @@
-package com.unam.fciencias.urbanincidents.repository
+package com.unam.fciencias.urbanincidents.user.repository
 
-import com.unam.fciencias.urbanincidents.model.User
+import com.unam.fciencias.urbanincidents.user.model.User
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.data.mongodb.repository.Update

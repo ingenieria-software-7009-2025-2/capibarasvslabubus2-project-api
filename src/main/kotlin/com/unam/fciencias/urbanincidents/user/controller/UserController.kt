@@ -1,10 +1,10 @@
-package com.unam.fciencias.urbanincidents.controller
+package com.unam.fciencias.urbanincidents.user.controller
 
-import com.unam.fciencias.urbanincidents.model.CreateUser
-import com.unam.fciencias.urbanincidents.model.LoginRequest
-import com.unam.fciencias.urbanincidents.model.User
-import com.unam.fciencias.urbanincidents.controller.body.UpdateUserRequest
-import com.unam.fciencias.urbanincidents.service.UserService
+import com.unam.fciencias.urbanincidents.user.model.CreateUser
+import com.unam.fciencias.urbanincidents.user.model.LoginRequest
+import com.unam.fciencias.urbanincidents.user.model.User
+import com.unam.fciencias.urbanincidents.user.controller.body.UpdateUserRequest
+import com.unam.fciencias.urbanincidents.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 

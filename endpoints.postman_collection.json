@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "dd5d5e63-139f-43de-92ca-770a6d780a46",
+		"_postman_id": "f0ec5cb9-9eb7-4feb-886d-c852ef549a25",
 		"name": "Endpoints USER",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "42582101"
+		"_exporter_id": "42582101",
+		"_collection_link": "https://capibaras-vs-labubus2.postman.co/workspace/urban-incidents~aedf331d-793a-49ca-8ada-af49b899e1cb/collection/42582101-f0ec5cb9-9eb7-4feb-886d-c852ef549a25?action=share&source=collection_link&creator=42582101"
 	},
 	"item": [
 		{
@@ -11,6 +12,9 @@
 			"item": [
 				{
 					"name": "Get1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [
@@ -20,6 +24,15 @@
 								"type": "text"
 							}
 						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/me",
 							"protocol": "http",
@@ -102,7 +115,12 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\"\n}"
+							"raw": "{\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/login",
@@ -127,7 +145,72 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"pedro.sanchez@example.com\",\n  \"password\": \"pedropassword2025\"\n}"
+							"raw": "{\n  \"email\": \"pedro.sanchez@example.com\",\n  \"password\": \"pedropassword2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login3",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"pedro.sanchez@example.com\",\n  \"password\": \"contrasena invalidaaaaaaaaa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login4",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"correo invalidooooo\",\n  \"password\": \"pedropassword2025\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/login",
@@ -148,19 +231,24 @@
 			]
 		},
 		{
-			"name": "Endpoint POST",
+			"name": "Endpoint LOGOUT",
 			"item": [
 				{
-					"name": "Usuario1",
+					"name": "Logout1",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"securePassword123\"\n}"
+							"raw": "{\n    \"token\": \"eb9c95e8-bc38-4855-b4a2-19c27562a926\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/v1/users",
+							"raw": "http://localhost:8080/v1/users/logout",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -168,9 +256,83 @@
 							"port": "8080",
 							"path": [
 								"v1",
-								"users"
+								"users",
+								"logout"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Unauthorized 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout Unauthorized 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"token\": \"token invalidooo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Endpoint POST",
+			"item": [
+				{
+					"name": "Usuario1",
+					"request": {
+						"method": "POST",
+						"header": []
 					},
 					"response": []
 				},
@@ -178,23 +340,7 @@
 					"name": "Usuario2",
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"usuarioPrueba@ciencias.unam.mx\",\n  \"password\": \"contrasñaAleatoria\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users"
-							]
-						}
+						"header": []
 					},
 					"response": []
 				},
@@ -202,23 +348,7 @@
 					"name": "Usuario vacío",
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users"
-							]
-						}
+						"header": []
 					},
 					"response": []
 				},
@@ -226,23 +356,7 @@
 					"name": "Caracteres random",
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"email\": \"&%$#)(/=-.,[]ñ}{´+,<>@gmail.com\",\n  \"password\": \"<.,_:;[]*¨[]*¨¡?=)=)(/&%%$#!|°\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users"
-							]
-						}
+						"header": []
 					},
 					"response": []
 				},
@@ -250,23 +364,7 @@
 					"name": "Intento de crear id y token",
 					"request": {
 						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n   \"id\": \"123456789\",\n  \"email\": \"usarioRandon@gmail.com\",\n  \"password\": \"contraseñaPrueba°\",\n  \"token\": \"myToken\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users"
-							]
-						}
+						"header": []
 					},
 					"response": []
 				}
@@ -288,7 +386,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"nuevoemail@ejemplo.com\"\n}"
+							"raw": "{\n    \"email\": \"nuevoemail@ejemplo.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/me",
@@ -319,7 +422,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"password\": \"ladygaga\"\n}"
+							"raw": "{\n    \"password\": \"ladygaga\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/me",
@@ -350,7 +458,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"password\": \"ladygaga\"\n}"
+							"raw": "{\n    \"password\": \"ladygaga\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "http://localhost:8080/v1/users/me",
@@ -363,61 +476,6 @@
 								"v1",
 								"users",
 								"me"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Endpoint LOGOUT",
-			"item": [
-				{
-					"name": "Logout1",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"token\": \"67a195d3-eddb-4600-9706-1e4586318c0a\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users/logout",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users",
-								"logout"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Logout Unauthorized",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"token\": \"\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:8080/v1/users/logout",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"v1",
-								"users",
-								"logout"
 							]
 						}
 					},

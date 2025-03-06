@@ -1,12 +1,12 @@
-### Archivos de ayuda y compilación ###
+### Help and build files ###  
 HELP.md
 
-### Directorios de compilación ###
+### Build directories ###  
 /target/
 /out/
 /bin/
 
-### Dependencias y configuración de Maven ###
+### Maven dependencies and configuration ###  
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -20,7 +20,7 @@ buildNumber.properties
 !mvnw
 !mvnw.cmd
 
-### Configuración de IDEs (Spring Tool Suite, IntelliJ, VS Code, Eclipse) ###
+### IDE configuration (Spring Tool Suite, IntelliJ, VS Code, Eclipse) ###  
 .idea/
 .vscode/
 *.sublime-workspace
@@ -35,7 +35,7 @@ buildNumber.properties
 .springBeans/
 .sts4-cache/
 
-### Archivos de entorno y configuración ###
+### Environment and configuration files ###  
 .env
 .env.local
 *.log
@@ -43,7 +43,7 @@ buildNumber.properties
 .DS_Store
 Thumbs.db
 
-### Archivos de caché de Kotlin ###
+### Kotlin cache files ###  
 *.class
 *.jar
 *.war
@@ -54,7 +54,7 @@ Thumbs.db
 *.coverage
 jacoco.exec
 
-### Archivos específicos de MongoDB ###
+### MongoDB-specific files ###  
 /data/db/
 mongod.lock
 mongod.pid

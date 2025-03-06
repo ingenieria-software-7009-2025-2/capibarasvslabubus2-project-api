@@ -18,7 +18,7 @@ class UserController(
      * Endpoint for creating a new user.
      * This method handles HTTP POST requests to create a new user in the system.
      * @param user The user object received in the request body containing the user's details
-     *             such as email, password, and token.
+     *             such as email and password.
      * @return ResponseEntity containing the created User object in the response body
      *         with HTTP status 200 (OK).
      */

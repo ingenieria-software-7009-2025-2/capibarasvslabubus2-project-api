@@ -14,8 +14,7 @@ data class User(
 
 data class CreateUser(
     val email: String,
-    val password: String,
-    val token: String
+    val password: String
 )
 
 data class LoginRequest(

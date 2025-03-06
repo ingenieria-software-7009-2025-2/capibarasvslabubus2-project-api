@@ -47,12 +47,18 @@ class UserController(
     /**
      * Endpoint for user logout.
      * This method handles HTTP POST requests to close a user session.
-     * @return ResponseEntity containing a message confirming closed session
-     *         with HTTP status 200 (OK).
+     * @return If token is found, ResponseEntity containing a message confirming closed
+     *         session with HTTP status 200 (OK). Otherwise, contains an error message.
      */
     @PostMapping("/logout")
-    fun logoutUser(): ResponseEntity<String> {
-        return ResponseEntity.ok("Sesión cerrada")
+    fun logoutUser(@RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
+        if (logoutRequest.token.isEmpty())
+            return ResponseEntity.status(401).build()
+        val successLogout = userService.logoutUser(logoutRequest.token)
+        return if (!successLogout)
+            ResponseEntity.badRequest().build()
+        else
+            ResponseEntity.ok("Sesión cerrada")
     }
 
     /**

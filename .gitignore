@@ -1,33 +1,60 @@
+### Help and build files ###  
 HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-### STS ###
+### Build directories ###  
+/target/
+/out/
+/bin/
+
+### Maven dependencies and configuration ###  
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+!mvnw
+!mvnw.cmd
+
+### IDE configuration (Spring Tool Suite, IntelliJ, VS Code, Eclipse) ###  
+.idea/
+.vscode/
+*.sublime-workspace
+*.iws
+*.iml
+*.ipr
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
+.springBeans/
+.sts4-cache/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+### Environment and configuration files ###  
+.env
+.env.local
+*.log
+*.swp
+.DS_Store
+Thumbs.db
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+### Kotlin cache files ###  
+*.class
+*.jar
+*.war
+*.ear
+*.kt~
+/kotlin/
+/test-results/
+*.coverage
+jacoco.exec
 
-### VS Code ###
-.vscode/
+### MongoDB-specific files ###  
+/data/db/
+mongod.lock
+mongod.pid

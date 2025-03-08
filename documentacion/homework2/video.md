@@ -6,4 +6,6 @@ In the following link, you can see the test of the endpoints:
 - Get authenticated user information (GET /v1/users/me)
 - Update authenticated user information (PUT /v1/users/me).
 
+
+
 https://drive.google.com/file/d/1FM-cdTuv8EhOgMTvydjcuwCgK2JBe2-c/view?usp=sharing

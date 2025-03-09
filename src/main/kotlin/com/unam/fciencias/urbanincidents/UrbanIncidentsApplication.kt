@@ -6,7 +6,7 @@ import io.github.cdimascio.dotenv.Dotenv
 
 @SpringBootApplication
 class UrbanIncidentsApplication
-// Foo comment
+// Foo commentttttttttttttttt
 fun main(args: Array<String>) {
     val dotenv = Dotenv.configure().ignoreIfMissing().load()
     dotenv.entries().forEach { entry ->

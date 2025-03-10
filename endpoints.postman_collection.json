@@ -20,7 +20,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "eb9c95e8-bc38-4855-b4a2-19c27562a926",
+								"value": "e9aed15b-f6dc-424e-b9e4-b7969bb1eb8d",
 								"type": "text"
 							}
 						],
@@ -240,7 +240,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"token\": \"eb9c95e8-bc38-4855-b4a2-19c27562a926\"\n}",
+							"raw": "{\n    \"token\": \"e9aed15b-f6dc-424e-b9e4-b7969bb1eb8d\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -332,39 +332,156 @@
 					"name": "Usuario1",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"securePassword123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Usuario2",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"usuarioPrueba@ciencias.unam.mx\",\n  \"password\": \"contrasñaAleatoria\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Usuario vacío",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Caracteres random",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"&%$#)(/=-.,[]ñ}{´+,<>@gmail.com\",\n  \"password\": \"<.,_:;[]*¨[]*¨¡?=)=)(/&%%$#!|°\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Intento de crear id y token",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
-						"header": []
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \"id\": \"123456789\",\n  \"email\": \"usarioRandon@gmail.com\",\n  \"password\": \"contraseñaPrueba°\",\n  \"token\": \"myToken\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"users"
+							]
+						}
 					},
 					"response": []
 				}
@@ -380,7 +497,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "e9aed15b-f6dc-424e-b9e4-b7969bb1eb8d",
+								"value": "uniqueToken123",
 								"type": "text"
 							}
 						],
@@ -416,7 +533,7 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "9924de5b-a727-4386-8249-2b015e96e878",
+								"value": "uniqueToken123",
 								"type": "text"
 							}
 						],

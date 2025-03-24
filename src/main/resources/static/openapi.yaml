@@ -1,0 +1,62 @@
+openapi: 3.0.1
+info:
+  title: "Urban Incidents API"
+  description: |
+    This API is designed to manage users and urban incidents reported in the city.  
+    It allows the creation of users, registration of urban incidents, and querying the status of these incidents.  
+    With this API, users can interact with the system, report incidents, and receive updates on the status of reported incidents.
+  version: "1.0.0"
+paths:
+  /v1/users:
+    post:
+      tags:
+        - User
+      summary: "Crear un nuevo usuario"
+      description: "Registra un usuario en la aplicación con un correo y una contraseña."
+      requestBody:
+        description: "Datos del usuario a registrar"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+            examples:
+              Ejemplo de solicitud:
+                value:
+                  {
+                    "email": "usuario@example.com",
+                    "password": "securePass123",
+                  }
+      responses:
+        "201":
+          description: "Usuario creado exitosamente"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                Usuario nuevo:
+                  value: { "id": "12345", "email": "usuario@example.com" }
+                Usuario con nombre:
+                  value:
+                    {
+                      "id": "67890",
+                      "email": "otro@example.com",
+                      "name": "Juan Pérez",
+                    }
+components:
+  schemas:
+    CreateUser:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string

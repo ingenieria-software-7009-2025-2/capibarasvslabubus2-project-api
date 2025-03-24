@@ -7,10 +7,19 @@ import com.unam.fciencias.urbanincidents.user.controller.body.UpdateUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import org.springframework.http.ResponseEntity
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.web.bind.annotation.*
+import io.swagger.v3.oas.annotations.tags.Tag
 
 @RestController
 @RequestMapping("/v1/users")
+@Tag(name = "Users", description = "API para acciones de los usuarios")
 class UserController(
     private val userService: UserService
 ) {
@@ -24,10 +33,13 @@ class UserController(
      *         with HTTP status 200 (OK).
      */
     @PostMapping
-    fun createUser(@RequestBody user: CreateUser): ResponseEntity<User> {
+    fun createUser(
+        @RequestBody user: CreateUser
+    ): ResponseEntity<User> {
         val myUser = userService.createUser(user)
-        return ResponseEntity.ok(myUser)
+        return ResponseEntity.status(201).body(myUser)
     }
+
 
     /**
      * Endpoint for user login.

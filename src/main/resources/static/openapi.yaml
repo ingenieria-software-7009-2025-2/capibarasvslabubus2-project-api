@@ -11,39 +11,73 @@ paths:
     post:
       tags:
         - User
-      summary: "Crear un nuevo usuario"
-      description: "Registra un usuario en la aplicación con un correo y una contraseña."
+      summary: "Create a new user"
+      description: "Registers a user in the application with an email and a password."
       requestBody:
-        description: "Datos del usuario a registrar"
+        description: "User data to register"
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateUser"
             examples:
-              Ejemplo de solicitud:
+              Request Example:
                 value:
-                  {
-                    "email": "usuario@example.com",
-                    "password": "securePass123",
-                  }
+                  { "email": "user@example.com", "password": "securePass123" }
       responses:
         "201":
-          description: "Usuario creado exitosamente"
+          description: "User created successfully"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
               examples:
-                Usuario nuevo:
-                  value: { "id": "12345", "email": "usuario@example.com" }
-                Usuario con nombre:
+                New User:
+                  value: { "id": "12345", "email": "user@example.com" }
+                User with name:
                   value:
                     {
                       "id": "67890",
-                      "email": "otro@example.com",
-                      "name": "Juan Pérez",
+                      "email": "another@example.com",
+                      "password": "password123",
+                      "name": "John Doe",
                     }
+  /v1/users/login:
+    post:
+      tags:
+        - User
+      summary: "Endpoint for user login"
+      description: |
+        This method handles HTTP POST requests to give a user access to their account.
+        It accepts a JSON object with the user's email and password and returns the user with an updated token if valid, or a 404 if not found.
+      requestBody:
+        description: "A JSON object containing the user's email and password"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+            examples:
+              Request Example:
+                value:
+                  email: "user@example.com"
+                  password: "securePassword123"
+      responses:
+        "200":
+          description: "User found and successfully logged in with token"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                Response Example:
+                  value:
+                    id: "12345"
+                    email: "user@example.com"
+                    token: "jwt-token-here"
+        "404":
+          description: "User not found or invalid credentials"
+
 components:
   schemas:
     CreateUser:
@@ -59,4 +93,15 @@ components:
         id:
           type: string
         email:
+          type: string
+        name:
+          type: string
+        token:
+          type: string
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
           type: string

@@ -77,7 +77,36 @@ paths:
                     token: "jwt-token-here"
         "404":
           description: "User not found or invalid credentials"
-
+  /v1/users/logout:
+    post:
+      tags:
+        - User
+      summary: User logout
+      description: Handles HTTP POST requests to log out a user session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  description: User session token.
+              required:
+                - token
+      responses:
+        "200":
+          description: Session successfully closed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Session closed"
+        "400":
+          description: Bad request, possibly invalid token.
+        "401":
+          description: Token not provided or unauthorized.
 components:
   schemas:
     CreateUser:

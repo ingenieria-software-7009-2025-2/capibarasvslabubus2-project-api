@@ -76,6 +76,10 @@ class UserService(
         // Buscar usuario por token
         val user = userRepository.findByToken(token) ?: return null
 
+        if(updateRequest.email != null && userRepository.findByEmail(updateRequest.email) != null){
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The email is already in use")
+        }
+
         // Actualizar campos específicos usando consultas del repositorio
         if (updateRequest.email != null && user.id != null) {
             userRepository.updateEmailById(user.id, updateRequest.email)

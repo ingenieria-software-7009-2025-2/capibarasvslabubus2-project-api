@@ -88,13 +88,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                  description: User session token.
-              required:
-                - token
+              $ref: "#/components/schemas/LogoutRequest"
       responses:
         "200":
           description: Session successfully closed.
@@ -102,11 +96,78 @@ paths:
             text/plain:
               schema:
                 type: string
-                example: "Session closed"
+                example: "Session cerrada"
         "400":
           description: Bad request, possibly invalid token.
         "401":
           description: Token not provided or unauthorized.
+  /v1/users/me:
+    get:
+      tags:
+        - User
+      summary: Retrieve user information
+      description: Handles HTTP GET requests to fetch user details.
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+          description: Bearer token for authentication.
+      responses:
+        "200":
+          description: Successfully retrieved user information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                Response Example:
+                  value:
+                    id: "67c50cec7c437410620df6e3"
+                    email: "pedro.sanchez@example.com"
+                    password: "pedropassword2025"
+                    token: "d30e4e45-6a82-4493-94ad-dd011f0f7d8a"
+        "401":
+          description: Unauthorized, missing or invalid token.
+    put:
+      tags:
+        - User
+      summary: Update current user information
+      description: Handles HTTP PUT requests to update user details.
+      security:
+        - basicAuth: []
+      parameters:
+        - in: header
+          name: Authorization
+          required: true
+          schema:
+            type: string
+          description: Bearer token for authentication.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: Successfully updated user information.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                Response Example:
+                  value:
+                    id: "67c50cec7c437410620df6e3"
+                    email: "pedro.sanchez@example.com"
+                    password: "pedropassword2025"
+                    token: "d30e4e45-6a82-4493-94ad-dd011f0f7d8a"
+        "401":
+          description: Unauthorized, missing or invalid token.
+        "404":
+          description: User not found.
 components:
   schemas:
     CreateUser:
@@ -134,3 +195,20 @@ components:
           type: string
         password:
           type: string
+    LogoutRequest:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - name
+        - email

@@ -24,4 +24,6 @@ interface UserRepository : MongoRepository<User, String>{
     @Query("{ 'id' : ?0 }")
     @Update("{ '\$set' : { 'token' : ?1 } }")
     fun updateTokenById(id: String, token: String)
+
+    fun findByEmail(email: String): User?
 }

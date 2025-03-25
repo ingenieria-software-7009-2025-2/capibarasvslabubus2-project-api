@@ -8,6 +8,7 @@ import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @CrossOrigin(origins = ["http://localhost:5173"]) 
@@ -25,9 +26,13 @@ class UserController(
      *         with HTTP status 200 (OK).
      */
     @PostMapping
-    fun createUser(@RequestBody user: CreateUser): ResponseEntity<User> {
-        val myUser = userService.createUser(user)
-        return ResponseEntity.ok(myUser)
+    fun createUser(@RequestBody user: CreateUser): ResponseEntity<Any> {
+        return try{
+            val myUser = userService.createUser(user)
+            return ResponseEntity.ok(myUser)
+        } catch (exception: ResponseStatusException){
+            ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
+        }
     }
 
     /**

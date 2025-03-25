@@ -8,8 +8,10 @@ import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
+@CrossOrigin(origins = ["http://localhost:5173"]) 
 @RequestMapping("/v1/users")
 class UserController(
     private val userService: UserService
@@ -24,9 +26,13 @@ class UserController(
      *         with HTTP status 200 (OK).
      */
     @PostMapping
-    fun createUser(@RequestBody user: CreateUser): ResponseEntity<User> {
-        val myUser = userService.createUser(user)
-        return ResponseEntity.ok(myUser)
+    fun createUser(@RequestBody user: CreateUser): ResponseEntity<Any> {
+        return try{
+            val myUser = userService.createUser(user)
+            return ResponseEntity.ok(myUser)
+        } catch (exception: ResponseStatusException){
+            ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
+        }
     }
 
     /**
@@ -79,18 +85,22 @@ class UserController(
     fun updateCurrentUser(
         @RequestHeader("Authorization") token: String?,
         @RequestBody updateRequest:  UpdateUserRequest
-    ): ResponseEntity<User> {
+    ): ResponseEntity<Any> {
         if (token.isNullOrEmpty()) {
             //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
             return ResponseEntity.status(401).build()
         }
 
-        val updatedUser = userService.updateUserByToken(token, updateRequest)
+        return try{
+            val updatedUser = userService.updateUserByToken(token, updateRequest)
 
-        return if (updatedUser != null) {
-            ResponseEntity.ok(updatedUser)
-        } else {
-            ResponseEntity.status(404).build()
+            return if (updatedUser != null) {
+                ResponseEntity.ok(updatedUser)
+            } else {
+                ResponseEntity.status(404).build()
+            }
+        } catch (exception: ResponseStatusException){
+            ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
         }
 
     }

@@ -10,6 +10,7 @@
    - [Installation](#installation)
 3. [Configuration](#configuration)
 4. [Usage](#usage)
+5. [Swagger Documentation](#swagger-documentation)
 
 ## **Built With**
 
@@ -62,3 +63,14 @@ To run the application locally:
  mvn spring-boot:run
 ```
 ## version 1.0.0
+
+## Swagger Documentation
+
+After starting the application locally, you can view the Swagger UI documentation to explore and interact with the API. Simply open your web browser and navigate to: `http://localhost:8080/swagger-ui/index.html`
+
+You can also access the OpenAPI specification in JSON or YAML format at:
+
+- JSON: `http://localhost:8080/v3/api-docs`
+- YAML: `http://localhost:8080/v3/api-docs.yaml`
+
+For further customization of the Swagger paths, you may modify the application properties accordingly.

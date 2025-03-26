@@ -61,3 +61,4 @@ To run the application locally:
 ```bash
  mvn spring-boot:run
 ```
+## version 1.0.0

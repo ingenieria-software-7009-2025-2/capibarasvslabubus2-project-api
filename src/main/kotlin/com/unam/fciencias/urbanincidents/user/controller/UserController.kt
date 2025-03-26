@@ -16,33 +16,33 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.http.HttpStatus
+
 
 @RestController
 @CrossOrigin(origins = ["http://localhost:5173"]) 
 @RequestMapping("/v1/users")
-@Tag(name = "Users", description = "API para acciones de los usuarios")
 class UserController(
     private val userService: UserService
 ) {
 
     /**
-     * Endpoint for creating a new user.
-     * This method handles HTTP POST requests to create a new user in the system.
-     * @param user The user object received in the request body containing the user's details
-     *             such as email and password.
-     * @return ResponseEntity containing the created User object in the response body
-     *         with HTTP status 200 (OK).
-     */
+    * Endpoint for creating a new user.
+    * This method handles HTTP POST requests to create a new user in the system.
+    * @param user The user object received in the request body containing the user's details
+    *             such as email and password.
+    * @return ResponseEntity containing the created User object in the response body
+    *         with HTTP status 201 (Created).
+    */
     @PostMapping
     fun createUser(@RequestBody user: CreateUser): ResponseEntity<Any> {
-        return try{
+        return try {
             val myUser = userService.createUser(user)
-            return ResponseEntity.ok(myUser)
-        } catch (exception: ResponseStatusException){
+            ResponseEntity.status(HttpStatus.CREATED).body(myUser)
+        } catch (exception: ResponseStatusException) {
             ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
         }
     }
-
 
     /**
      * Endpoint for user login.

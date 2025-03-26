@@ -42,6 +42,8 @@ paths:
                       "password": "password123",
                       "name": "John Doe",
                     }
+        "400":
+          description: "Bad Request, possibly due to invalid syntax."
   /v1/users/login:
     post:
       tags:
@@ -135,8 +137,6 @@ paths:
         - User
       summary: Update current user information
       description: Handles HTTP PUT requests to update user details.
-      security:
-        - basicAuth: []
       parameters:
         - in: header
           name: Authorization

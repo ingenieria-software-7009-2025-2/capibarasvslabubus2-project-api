@@ -1,7 +1,7 @@
 package com.unam.fciencias.urbanincidents.exception
 
-class UserNotFoundException: NoSuchElementException{
+class UserNotFoundException : NoSuchElementException {
     constructor() : super("The user was not found")
 
-    constructor(message: String): super(message)
+    constructor(message: String) : super(message)
 }

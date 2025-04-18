@@ -3,20 +3,32 @@ package com.unam.fciencias.urbanincidents.user.controller
 import com.unam.fciencias.urbanincidents.user.model.CreateUser
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
 import com.unam.fciencias.urbanincidents.user.model.User
-import com.unam.fciencias.urbanincidents.user.controller.body.UpdateUserRequest
+import com.unam.fciencias.urbanincidents.user.model.UpdateUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
+import com.unam.fciencias.urbanincidents.user.model.Token
 import com.unam.fciencias.urbanincidents.user.service.UserService
-import org.springframework.http.ResponseEntity
+import com.unam.fciencias.urbanincidents.exception.UserAlreadyExistsException
+import com.unam.fciencias.urbanincidents.exception.InvalidTokenException
+import com.unam.fciencias.urbanincidents.exception.TokenEmptyOrNullException
+
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.parameters.RequestBody as SwaggerRequestBody
+
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.http.HttpStatus
+import org.springframework.validation.annotation.Validated
+
+import jakarta.validation.Valid
+
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory; 
 
 
 @RestController
@@ -25,6 +37,8 @@ import org.springframework.http.HttpStatus
 class UserController(
     private val userService: UserService
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java); 
 
     /**
     * Endpoint for creating a new user.
@@ -35,14 +49,16 @@ class UserController(
     *         with HTTP status 201 (Created).
     */
     @PostMapping
-    fun createUser(@RequestBody user: CreateUser): ResponseEntity<Any> {
-        return try {
-            val myUser = userService.createUser(user)
-            ResponseEntity.status(HttpStatus.CREATED).body(myUser)
-        } catch (exception: ResponseStatusException) {
-            ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
-        }
+    fun createUser(@Valid @RequestBody user: CreateUser): ResponseEntity<User> = ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(userService.createUser(user))
+
+    @PostMapping("/batch")
+    fun createUsers(@Valid @RequestBody users: List<CreateUser>): ResponseEntity<List<User>> {
+        val createdUsers = users.map { userService.createUser(it) }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUsers)
     }
+
 
     /**
      * Endpoint for user login.
@@ -52,7 +68,7 @@ class UserController(
      *         status 200 (OK). Otherwise, with HTTP status 404 and not found.
      */
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginRequest: LoginRequest): ResponseEntity<User?> {
+    fun loginUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<User?> {
         val myUser = userService.loginUser(loginRequest)
         return if (myUser == null)
             ResponseEntity.notFound().build()
@@ -67,7 +83,7 @@ class UserController(
      *         session with HTTP status 200 (OK). Otherwise, contains an error message.
      */
     @PostMapping("/logout")
-    fun logoutUser(@RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
+    fun logoutUser(@Valid @RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
         if (logoutRequest.token.isEmpty())
             return ResponseEntity.status(401).build()
         val successLogout = userService.logoutUser(logoutRequest.token)
@@ -85,32 +101,24 @@ class UserController(
      */
     @GetMapping("/me")
     fun getUserInfo(@RequestHeader("Authorization") token: String?): ResponseEntity<User> {
-        val user = userService.getUser(token)
-        return ResponseEntity.ok(user)
+        if(token.isNullOrEmpty()){
+            throw TokenEmptyOrNullException(); 
+        }
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUser(token))
     }
-
 
     @PutMapping("/me")
     fun updateCurrentUser(
-        @RequestHeader("Authorization") token: String?,
+        @RequestHeader("Authorization") token: String?, @Valid
         @RequestBody updateRequest:  UpdateUserRequest
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<User> {
         if (token.isNullOrEmpty()) {
-            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
-            return ResponseEntity.status(401).build()
+            throw TokenEmptyOrNullException(); 
         }
-
-        return try{
-            val updatedUser = userService.updateUserByToken(token, updateRequest)
-
-            return if (updatedUser != null) {
-                ResponseEntity.ok(updatedUser)
-            } else {
-                ResponseEntity.status(404).build()
-            }
-        } catch (exception: ResponseStatusException){
-            ResponseEntity.status(exception.statusCode).body(mapOf("message" to exception.reason.orEmpty()))
-        }
-
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.updateUserByToken(token, updateRequest))
     }
 }

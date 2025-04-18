@@ -1,3 +1,7 @@
 package com.unam.fciencias.urbanincidents.exception
 
-class InvalidTokenException(token: String) : NoSuchElementException("There is no user associated with the token $token")
+class InvalidTokenException : NoSuchElementException {
+    constructor() : super("The given token is invalid")
+
+    constructor(token: String) : super("There is no user associated with the token $token")
+}

@@ -1,3 +1,7 @@
 package com.unam.fciencias.urbanincidents.exception
 
-class UserNotFoundException(message: String = "Invalid email or password") : NoSuchElementException(message)
+class UserNotFoundException: NoSuchElementException{
+    constructor() : super("The user was not found")
+
+    constructor(message: String): super(message)
+}

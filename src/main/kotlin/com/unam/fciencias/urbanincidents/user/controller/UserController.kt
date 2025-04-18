@@ -102,7 +102,7 @@ class UserController(
         }
         return ResponseEntity
             .status(HttpStatus.OK)
-            .body(userService.getUser(token))
+            .body(userService.getUserByToken(token))
     }
 
     @PutMapping("/me")

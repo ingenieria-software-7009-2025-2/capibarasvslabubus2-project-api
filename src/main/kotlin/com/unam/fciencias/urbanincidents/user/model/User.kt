@@ -103,7 +103,9 @@ data class UpdateUserRequest(
     @field:Email(message = ValidationMessages.EMAIL_INVALID)
     val email: String? = null,
 
-    @field:NotBlank(message = ValidationMessages.PASSWORD_EMPTY)
     @field:Size(min = MIN_LENGTH_PASSWORD, message = ValidationMessages.PASSWORD_SIZE)
-    val password: String? = null
+    val password: String? = null,
+
+    @field:Valid
+    val name: Name? = null,
 )

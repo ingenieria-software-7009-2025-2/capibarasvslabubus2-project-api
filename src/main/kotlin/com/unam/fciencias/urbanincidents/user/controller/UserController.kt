@@ -70,10 +70,7 @@ class UserController(
     @PostMapping("/login")
     fun loginUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<User?> {
         val myUser = userService.loginUser(loginRequest)
-        return if (myUser == null)
-            ResponseEntity.notFound().build()
-        else
-            ResponseEntity.ok(myUser)
+        return ResponseEntity.status(HttpStatus.OK).body(myUser)
     }
 
     /**
@@ -84,13 +81,12 @@ class UserController(
      */
     @PostMapping("/logout")
     fun logoutUser(@Valid @RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
-        if (logoutRequest.token.isEmpty())
-            return ResponseEntity.status(401).build()
-        val successLogout = userService.logoutUser(logoutRequest.token)
-        return if (!successLogout)
-            ResponseEntity.badRequest().build()
-        else
-            ResponseEntity.ok("Sesión cerrada")
+        if (logoutRequest.token.isEmpty()){
+            throw TokenEmptyOrNullException()
+        }
+
+        userService.logoutUser(logoutRequest.token)
+        return ResponseEntity.status(HttpStatus.OK).body("Session closed")
     }
 
     /**

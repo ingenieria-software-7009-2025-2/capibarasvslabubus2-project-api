@@ -9,6 +9,7 @@ import com.unam.fciencias.urbanincidents.user.repository.UserRepository
 import com.unam.fciencias.urbanincidents.exception.UserAlreadyExistsException
 import com.unam.fciencias.urbanincidents.exception.InvalidTokenException
 import com.unam.fciencias.urbanincidents.exception.TokenEmptyOrNullException
+import com.unam.fciencias.urbanincidents.exception.UserNotFoundException
 
 import org.springframework.stereotype.Service
 import org.springframework.http.HttpStatus
@@ -56,10 +57,16 @@ class UserService(
         val user = userRepository.findByEmailAndPassword(
             loginRequest.email,
             loginRequest.password
-        ) ?: return null
+        )
+
+        if(user == null){
+            throw UserNotFoundException()
+        }
+
         // Update token
         val token = UUID.randomUUID().toString()
         userRepository.updateTokenById(user.id.toString(), token)
+
         // Return user with new token
         val myUser = User(
             id = user.id.toString(),
@@ -78,33 +85,45 @@ class UserService(
      * @param token the token of the user that is closing session.
      * @return true if the user was found.
      */
-    fun logoutUser(token: String): Boolean {
-        val userFound = userRepository.findByToken(token);
-        if(userFound != null)
-            userRepository.updateTokenById(userFound.id.toString(), "")
-        return (userFound != null)
+    fun logoutUser(token: String): Unit {
+        val userFound = userRepository.findByToken(token) ?: throw InvalidTokenException(token)
+        userRepository.updateTokenById(userFound.id.toString(), "")
     }
 
-    fun updateUserByToken(token: String, updateRequest: UpdateUserRequest): User? {
-        // Buscar usuario por token
-        val user = userRepository.findByToken(token) ?: return null
+    fun updateUserByToken(token: String, updateRequest: UpdateUserRequest): User {
+        val user = userRepository.findByToken(token)
+            ?: throw InvalidTokenException(token)
 
-        if(updateRequest.email != null && userRepository.findByEmail(updateRequest.email) != null){
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The email is already in use")
+        val userId = user.id ?: throw IllegalStateException("User ID should not be null")
+
+        // Si no hay cambios, no hacemos nada
+        if (
+            updateRequest.email == null &&
+            updateRequest.password == null &&
+            updateRequest.name == null
+        ) return user
+
+        // Validamos si el nuevo email ya está en uso por otro usuario
+        updateRequest.email?.let { newEmail ->
+            val existingUser = userRepository.findByEmail(newEmail)
+            if (existingUser != null && existingUser.id != userId) {
+                throw UserAlreadyExistsException(newEmail)
+            }
+            userRepository.updateEmailById(userId, newEmail)
         }
 
-        // Actualizar campos específicos usando consultas del repositorio
-        if (updateRequest.email != null && user.id != null) {
-            userRepository.updateEmailById(user.id, updateRequest.email)
+        updateRequest.password?.let {
+            userRepository.updatePasswordById(userId, it)
         }
 
-        if (updateRequest.password != null && user.id != null) {
-            userRepository.updatePasswordById(user.id, updateRequest.password)
+        updateRequest.name?.let {
+            userRepository.updateNameById(userId, it)
         }
 
-        // Buscar y devolver el usuario actualizado
-        return userRepository.findByToken(token)
+        return userRepository.findById(userId)
+            .orElseThrow { UserNotFoundException("User not found after update") }
     }
+
 
 
     fun getUser(token: String) : User{

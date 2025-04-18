@@ -42,4 +42,24 @@ class UserExceptionHandler {
             .status(HttpStatus.BAD_REQUEST)
             .body(mapOf("error" to ex.message!!))
     }
+
+    @ExceptionHandler(EmailNotFoundException::class)
+    fun handleEmailNotFound(ex: EmailNotFoundException): ResponseEntity<Map<String, String>> {
+
+        // logger.warn("This user already exists: ${ex.message}")
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(mapOf("error" to ex.message!!))
+    }    
+    
+    @ExceptionHandler(UserNotFoundException::class)
+    fun handleUserNotFound(ex: UserNotFoundException): ResponseEntity<Map<String, String>> {
+
+        // logger.warn("This user already exists: ${ex.message}")
+
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(mapOf("error" to ex.message!!))
+    }
 }

@@ -1,11 +1,8 @@
 package com.unam.fciencias.urbanincidents.validator
 
+import com.unam.fciencias.urbanincidents.enum.USER_ROLE
 import jakarta.validation.*
 import kotlin.reflect.KClass
-
-enum class ROLE {
-  USER, ADMIN,
-}
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER) 
 @Retention(AnnotationRetention.RUNTIME) 
@@ -17,6 +14,6 @@ annotation class ValidRole(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class ValidRoleValidator : EnumValidator<ValidRole, ROLE>(ROLE::class.java)
+class ValidRoleValidator : EnumValidator<ValidRole, USER_ROLE>(USER_ROLE::class.java)
 
 

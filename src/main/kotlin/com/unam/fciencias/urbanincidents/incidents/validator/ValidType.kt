@@ -1,11 +1,9 @@
 package com.unam.fciencias.urbanincidents.validator
 
+import com.unam.fciencias.urbanincidents.enum.INCIDENT_TYPE
 import jakarta.validation.*
 import kotlin.reflect.KClass
 
-enum class TYPE {
-  AUTOMOTIVE, ROAD_INFRASTRUCTURE, NATURAL_PHENOMENA, ARCHITECTURE, OTHERS,
-}
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER) 
 @Retention(AnnotationRetention.RUNTIME) 
@@ -17,7 +15,7 @@ annotation class ValidType(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class ValidTypeValidator : EnumValidator<ValidType, TYPE>(TYPE::class.java)
+class ValidTypeValidator : EnumValidator<ValidType, INCIDENT_TYPE>(INCIDENT_TYPE::class.java)
 
 
 

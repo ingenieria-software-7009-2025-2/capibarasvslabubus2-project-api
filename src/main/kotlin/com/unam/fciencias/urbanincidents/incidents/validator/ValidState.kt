@@ -1,11 +1,9 @@
 package com.unam.fciencias.urbanincidents.validator
 
+import com.unam.fciencias.urbanincidents.enum.INCIDENT_STATE
 import jakarta.validation.*
 import kotlin.reflect.KClass
 
-enum class STATE {
-  REPORTED, IN_PROGRESS, SOLVED,
-}
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER) 
 @Retention(AnnotationRetention.RUNTIME) 
@@ -17,7 +15,7 @@ annotation class ValidState(
     val payload: Array<KClass<out Payload>> = []
 )
 
-class ValidStateValidator : EnumValidator<ValidState, STATE>(STATE::class.java)
+class ValidStateValidator : EnumValidator<ValidState, INCIDENT_STATE>(INCIDENT_STATE::class.java)
 
 
 

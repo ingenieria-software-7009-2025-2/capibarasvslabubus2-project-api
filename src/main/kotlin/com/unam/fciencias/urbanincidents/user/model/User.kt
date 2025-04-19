@@ -19,7 +19,7 @@ object ValidationMessages {
     const val MIDDLE_NAME_EMPTY = "Middle name can't be empty"
     const val FATHER_LAST_NAME_EMPTY = "Father last name can't be empty"
     const val MOTHER_LAST_NAME_EMPTY = "Mother last name can't be empty"
-    const val ROLE_EMPTY = "Role can't be empty"
+    const val USER_ROLE_EMPTY = "Role can't be empty"
     const val PASSWORD_EMPTY = "Password can't be empty"
     const val TOKEN_EMPTY = "Token can't be empty"
 
@@ -78,7 +78,7 @@ data class CreateUser(
     @field:Valid
     val name: Name,
 
-    @field:NotBlank(message = ValidationMessages.ROLE_EMPTY)
+    @field:NotBlank(message = ValidationMessages.USER_ROLE_EMPTY)
     @field:ValidRole
     val role: String,
 

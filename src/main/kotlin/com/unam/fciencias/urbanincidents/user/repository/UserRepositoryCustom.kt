@@ -1,6 +1,5 @@
 package com.unam.fciencias.urbanincidents.user.repository
 
-import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.model.Name
 
 interface UserRepositoryCustom {
@@ -8,4 +7,5 @@ interface UserRepositoryCustom {
     fun updatePasswordById(id: String, password: String)
     fun updateTokenById(id: String, token: String)
     fun updateNameById(id: String, name: Name)
+    fun updateIncidentsById(id: String, incidents: List<String>)
 }

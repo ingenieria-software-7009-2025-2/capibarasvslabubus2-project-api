@@ -1,14 +1,13 @@
 package com.unam.fciencias.urbanincidents.user.controller
 
-import com.unam.fciencias.urbanincidents.exception.TokenEmptyOrNullException
-import com.unam.fciencias.urbanincidents.user.model.CreateUser
+import com.unam.fciencias.urbanincidents.exception.*
+import com.unam.fciencias.urbanincidents.user.model.CreaterUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
 import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
-import com.unam.fciencias.urbanincidents.user.model.UpdateUserRequest
+import com.unam.fciencias.urbanincidents.user.model.PatchUserRequest
 import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import jakarta.validation.Valid
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,53 +17,45 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/users")
 class UserController(private val userService: UserService) {
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    @GetMapping("/{id}")
+    fun getUserById(@PathVariable id: String): ResponseEntity<User> {
+        if (id.isBlank()) {
+            throw InvalidUserIdException()
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id))
+    }
 
-    /**
-     * Endpoint for creating a new user. This method handles HTTP POST requests to create a new user
-     * in the system.
-     * @param user The user object received in the request body containing the user's details
-     * ```
-     *             such as email and password.
-     * @return
-     * ```
-     * ResponseEntity containing the created User object in the response body
-     * ```
-     *         with HTTP status 201 (Created).
-     * ```
-     */
+    @GetMapping()
+    fun getUsers(): ResponseEntity<List<User>> {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers())
+    }
+
+    @GetMapping("/me")
+    fun getUserInfo(@RequestHeader("Authorization") token: String?): ResponseEntity<User> {
+        if (token.isNullOrEmpty()) {
+            throw TokenEmptyOrNullException()
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByToken(token))
+    }
+
     @PostMapping
-    fun createUser(@Valid @RequestBody user: CreateUser): ResponseEntity<User> =
+    fun createUser(@Valid @RequestBody user: CreaterUserRequest): ResponseEntity<User> =
             ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user))
 
     @PostMapping("/batch")
-    fun createUsers(@Valid @RequestBody users: List<CreateUser>): ResponseEntity<List<User>> {
+    fun createUsers(
+            @Valid @RequestBody users: List<CreaterUserRequest>
+    ): ResponseEntity<List<User>> {
         val createdUsers = users.map { userService.createUser(it) }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUsers)
     }
 
-    /**
-     * Endpoint for user login. This method handles HTTP POST requests to give a user access into
-     * their account.
-     * @param loginRequest A JSON with the fields of mail and password.
-     * @return ResponseEntity containing the found user with the token updated in HTTP
-     * ```
-     *         status 200 (OK). Otherwise, with HTTP status 404 and not found.
-     * ```
-     */
     @PostMapping("/login")
     fun loginUser(@Valid @RequestBody loginRequest: LoginRequest): ResponseEntity<User?> {
         val myUser = userService.loginUser(loginRequest)
         return ResponseEntity.status(HttpStatus.OK).body(myUser)
     }
 
-    /**
-     * Endpoint for user logout. This method handles HTTP POST requests to close a user session.
-     * @return If token is found, ResponseEntity containing a message confirming closed
-     * ```
-     *         session with HTTP status 200 (OK). Otherwise, contains an error message.
-     * ```
-     */
     @PostMapping("/logout")
     fun logoutUser(@Valid @RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
         if (logoutRequest.token.isEmpty()) {
@@ -75,29 +66,15 @@ class UserController(private val userService: UserService) {
         return ResponseEntity.status(HttpStatus.OK).body("Session closed")
     }
 
-    /**
-     * Endpoint to retrieve user information. This method handles HTTP GET requests to fetch the
-     * details from a user.
-     *
-     * @return a User object with the hardcoded information of a user.
-     */
-    @GetMapping("/me")
-    fun getUserInfo(@RequestHeader("Authorization") token: String?): ResponseEntity<User> {
-        if (token.isNullOrEmpty()) {
-            throw TokenEmptyOrNullException()
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByToken(token))
-    }
-
-    @PutMapping("/me")
-    fun updateCurrentUser(
+    @PatchMapping("/me")
+    fun patchUser(
             @RequestHeader("Authorization") token: String?,
-            @Valid @RequestBody updateRequest: UpdateUserRequest
+            @Valid @RequestBody updateRequest: PatchUserRequest
     ): ResponseEntity<User> {
         if (token.isNullOrEmpty()) {
             throw TokenEmptyOrNullException()
         }
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.updateUserByToken(token, updateRequest))
+                .body(userService.patchUserByToken(token, updateRequest))
     }
 }

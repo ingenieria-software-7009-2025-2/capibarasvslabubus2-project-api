@@ -163,4 +163,6 @@ class IncidentService(
 
     private fun encodeImageAsBase64(image: MultipartFile): String =
             Base64.getEncoder().encodeToString(image.bytes)
+
+    fun existsIncidentById(id: String): Boolean = incidentRepository.findById(id).isPresent()
 }

@@ -1,37 +1,33 @@
 package com.unam.fciencias.urbanincidents.user.service
 
-import com.unam.fciencias.urbanincidents.exception.EmailNotFoundException
-import com.unam.fciencias.urbanincidents.exception.InvalidTokenException
-import com.unam.fciencias.urbanincidents.exception.UserAlreadyExistsException
-import com.unam.fciencias.urbanincidents.exception.UserNotFoundException
-import com.unam.fciencias.urbanincidents.exception.UrbanIncidentsException
-import com.unam.fciencias.urbanincidents.user.model.CreateUser
+import com.unam.fciencias.urbanincidents.exception.*
+import com.unam.fciencias.urbanincidents.incident.service.IncidentService
+import com.unam.fciencias.urbanincidents.user.model.CreaterUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
-import com.unam.fciencias.urbanincidents.user.model.UpdateUserRequest
+import com.unam.fciencias.urbanincidents.user.model.PatchUserRequest
 import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.repository.UserRepository
 import java.util.UUID
+import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
-import javax.management.relation.InvalidRelationIdException
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+        private val userRepository: UserRepository,
+        @Lazy private val incidentService: IncidentService
+) {
 
-    /**
-     * Creates a new user in the database.
-     *
-     * @param request The request object containing the user's email and password.
-     * @return The saved user with a generated ID.
-     */
-    fun createUser(request: CreateUser): User {
+    fun createUser(request: CreaterUserRequest): User {
         userRepository.findByEmail(request.email)?.let {
-            throw UserAlreadyExistsException(UserAlreadyExistsException.generateMessageWithEmail(request.email))
+            throw UserAlreadyExistsException(
+                    UserAlreadyExistsException.generateMessageWithEmail(request.email)
+            )
         }
         val user =
                 User(
                         id = null,
                         name = request.name,
-                        role = request.role, 
+                        role = request.role,
                         email = request.email,
                         password = request.password,
                         token = "",
@@ -40,13 +36,7 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.save(user)
     }
 
-    /**
-     * This method finds a user by email and password, then updates their token to login.
-     * @param loginRequest with the fields of mail and password.
-     * @return the user updated if is found, otherwise returns null.
-     */
     fun loginUser(loginRequest: LoginRequest): User? {
-        // Search user
         val user =
                 userRepository.findByEmailAndPassword(loginRequest.email, loginRequest.password)
                         ?: throw UserNotFoundException(
@@ -62,7 +52,7 @@ class UserService(private val userRepository: UserRepository) {
                 User(
                         id = userId,
                         name = user.name,
-                        role = user.role, 
+                        role = user.role,
                         email = user.email,
                         token = token,
                         password = user.password,
@@ -71,32 +61,30 @@ class UserService(private val userRepository: UserRepository) {
         return myUser
     }
 
-    /**
-     * This method finds a user by token, then invalidates the token to logout.
-     * @param token the token of the user that is closing session.
-     * @return true if the user was found.
-     */
     fun logoutUser(token: String): Unit {
-        val userFound = userRepository.findByToken(token) ?: throw InvalidTokenException(InvalidTokenException.generateMessageWithToken(token))
+        val userFound =
+                userRepository.findByToken(token)
+                        ?: throw InvalidTokenException(
+                                InvalidTokenException.generateMessageWithToken(token)
+                        )
         userRepository.updateTokenById(userFound.id.toString(), "")
     }
 
-    fun updateUserByToken(token: String, updateRequest: UpdateUserRequest): User {
-        val user = userRepository.findByToken(token) ?: throw InvalidTokenException(InvalidTokenException.generateMessageWithToken(token))
+    fun patchUserByToken(token: String, updateRequest: PatchUserRequest): User {
+        val user =
+                userRepository.findByToken(token)
+                        ?: throw InvalidTokenException(
+                                InvalidTokenException.generateMessageWithToken(token)
+                        )
 
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
-
-        if (updateRequest.email == null &&
-                        updateRequest.password == null &&
-                        updateRequest.name == null
-        ){
-                return user
-        }
 
         updateRequest.email?.let { newEmail ->
             val existingUser = userRepository.findByEmail(newEmail)
             if (existingUser != null && existingUser.id != userId) {
-                throw UserAlreadyExistsException(UserAlreadyExistsException.generateMessageWithEmail(newEmail))
+                throw UserAlreadyExistsException(
+                        UserAlreadyExistsException.generateMessageWithEmail(newEmail)
+                )
             }
             userRepository.updateEmailById(userId, newEmail)
         }
@@ -105,17 +93,47 @@ class UserService(private val userRepository: UserRepository) {
 
         updateRequest.name?.let { userRepository.updateNameById(userId, it) }
 
-        return userRepository.findById(userId).orElseThrow { UserNotFoundException() }
+        updateRequest.incidents?.let { incidents ->
+            val incidentsIds = mutableSetOf<String>()
+            for (incidentId in incidents) {
+                if (incidentId.isNullOrBlank() || !incidentService.existsIncidentById(incidentId)) {
+                    throw InvalidIncidentIdException("Invalid id for an incident in the given list")
+                }
+                incidentsIds.add(incidentId)
+            }
+
+            if (incidentsIds.size != updateRequest.incidents.size) {
+                throw InvalidIncidentIdException(
+                        "You can't set the same id for a publication twice"
+                )
+            }
+            userRepository.updateIncidentsById(userId, updateRequest.incidents)
+        }
+
+        return user.copy(
+                name = updateRequest.name ?: user.name,
+                email = updateRequest.email ?: user.email,
+                password = updateRequest.password ?: user.password,
+                incidents = updateRequest.incidents ?: user.incidents,
+        )
     }
 
     fun getUserByToken(token: String): User =
-            userRepository.findByToken(token) ?: throw InvalidTokenException(InvalidTokenException.generateMessageWithToken(token))
+            userRepository.findByToken(token)
+                    ?: throw InvalidTokenException(
+                            InvalidTokenException.generateMessageWithToken(token)
+                    )
 
     fun getUserById(id: String): User =
             userRepository.findById(id).orElseThrow { UserNotFoundException() }
 
+    fun getUsers(): List<User> = userRepository.findAll()
+
     fun getUserByEmail(email: String): User =
-            userRepository.findByEmail(email) ?: throw EmailNotFoundException(EmailNotFoundException.generateMessageWithEmail(email))
+            userRepository.findByEmail(email)
+                    ?: throw EmailNotFoundException(
+                            EmailNotFoundException.generateMessageWithEmail(email)
+                    )
 
     fun existsUserById(id: String): Boolean = userRepository.findById(id).isPresent()
 }

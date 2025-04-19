@@ -4,21 +4,18 @@ import com.unam.fciencias.urbanincidents.exception.*
 import com.unam.fciencias.urbanincidents.incident.model.*
 import com.unam.fciencias.urbanincidents.incident.service.IncidentService
 import com.unam.fciencias.urbanincidents.user.model.*
-import com.unam.fciencias.urbanincidents.user.service.UserService
 import jakarta.validation.Valid
+import jakarta.validation.constraints.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import jakarta.validation.constraints.*
 
 @RestController
 @CrossOrigin(origins = ["http://localhost:5173"])
 @RequestMapping("/v1/incidents")
-class IncidentController(
-        private val incidentService: IncidentService
-) {
+class IncidentController(private val incidentService: IncidentService) {
 
     @GetMapping("/{id}")
     fun getIncidentById(@PathVariable id: String): ResponseEntity<Incident> {
@@ -38,22 +35,23 @@ class IncidentController(
                 .body(incidentService.createIncident(incidentInfo, images))
     }
 
+    @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun updateIncident(
+            @Valid @RequestPart("incident") updateRequest: UpdateIncident,
+            @RequestParam("images") images: List<MultipartFile>?
+    ): ResponseEntity<Incident> {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(incidentService.updateIncident(updateRequest, images))
+    }
 
-    // @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    // fun updateIncident(@Valid @RequestPart("incident") updateRequest : UpdateIncident, @RequestParam("images") images : List<MultipartFile>?) : ResponseEntity<Incident> {
-    //     return ResponseEntity.status(HttpStatus.OK).body(incidentService.updateIncident(updateRequest, images))
-    // }
-
-    fun validateImagesList(images: List<MultipartFile>) : Unit {
+    fun validateImagesList(images: List<MultipartFile>) {
         if (images.isEmpty()) {
             throw InvalidImagesListException("The list of incident images can't be empty")
         }
-        for(image in images){
-            if(image.isEmpty()){
+        for (image in images) {
+            if (image.isEmpty()) {
                 throw InvalidImagesListException("The list can't contain an empty image")
             }
         }
-        return 
     }
-
 }

@@ -7,8 +7,11 @@ enum class USER_ROLE(private val role: String) {
     USER("user"),
     ADMIN("admin"); 
 
+    val roleLowerCase: String
+        get() = role.lowercase()
+
     @JsonValue
-    fun toValue(): String = role
+    fun toValue(): String = role.lowercase()
 
     companion object {
         @JvmStatic

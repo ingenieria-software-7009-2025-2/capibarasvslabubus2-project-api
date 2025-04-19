@@ -10,6 +10,9 @@ enum class INCIDENT_TYPE(private val type: String) {
     ARCHITECTURE("architecture"),
     OTHERS("others");
 
+    val typeToLowerCase: String
+        get() = type.lowercase()
+
     @JsonValue
     fun toValue(): String = type  
 

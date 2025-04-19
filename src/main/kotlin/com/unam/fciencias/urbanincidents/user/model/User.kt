@@ -5,8 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document
 import jakarta.validation.constraints.*
 import jakarta.validation.Valid
 
+import com.unam.fciencias.urbanincidents.enums.*
 import com.unam.fciencias.urbanincidents.validator.NullableNotBlank
-import com.unam.fciencias.urbanincidents.validator.ValidRole
 
 const val MIN_LENGTH_PASSWORD = 6
 const val MAX_LENGTH_PASSWORD = 20
@@ -65,9 +65,9 @@ data class User(
 
     val email: String,
 
-    val password: String,
+    val role: USER_ROLE,
 
-    val role: String,
+    val password: String,
 
     val token: String,
 
@@ -78,9 +78,7 @@ data class CreateUser(
     @field:Valid
     val name: Name,
 
-    @field:NotBlank(message = ValidationMessages.USER_ROLE_EMPTY)
-    @field:ValidRole
-    val role: String,
+    val role: USER_ROLE,
 
     @field:Email(message = ValidationMessages.EMAIL_INVALID)
     val email: String,

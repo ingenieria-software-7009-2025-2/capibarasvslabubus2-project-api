@@ -4,11 +4,13 @@ import com.unam.fciencias.urbanincidents.exception.*
 import com.unam.fciencias.urbanincidents.incident.model.*
 import com.unam.fciencias.urbanincidents.incident.repository.IncidentRepository
 import com.unam.fciencias.urbanincidents.user.model.*
+import com.unam.fciencias.urbanincidents.enums.*
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import java.time.LocalDate
 import java.util.Base64
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.data.mongodb.core.query.update
 
 @Service
 class IncidentService(
@@ -46,13 +48,31 @@ class IncidentService(
         return incidentRepository.save(newIncident)
     }
 
-    // fun updateIncident(updateRequest : UpdateIncident, images: List<MultipartFile>) : Incident {
+    // fun updateIncident(updateRequest : UpdateIncident, images: List<MultipartFile>?) : Incident {
+
+	// 	val incident : Incident = getIncidentById(updateRequest.id) 
+
+	// 	val incidentId : String = incident.id ?: throw UrbanIncidentsException("Incident ID should not be null")
+
+	// 	updateRequest.state?.let {
+	// 		// val pastState : INCIDENT_STATE = enumValueOf<INCIDENT_STATE>(incident.state.uppercase())
+
+	// 		// val newState : INCIDENT_STATE = enumValueOf<INCIDENT_STATE>(updateRequest.state.uppercase())
+
+	// 		incidentRepository.updateStateById(incidentId, updateRequest.state)
+	// 	}
 
     //     val encodedImages : List<String> = listOfEncodedImages(images)
 
+
+
+        
+
     // }
 
-    private fun listOfEncodedImages(images: List<MultipartFile>) = images.map { encodeImageAsBase64(it)}
+    private fun listOfEncodedImages(images: List<MultipartFile>?): List<String>  = images?.map { encodeImageAsBase64(it) } ?: emptyList()
+    
+
 
     private fun encodeImageAsBase64(image: MultipartFile): String =
             Base64.getEncoder().encodeToString(image.bytes)

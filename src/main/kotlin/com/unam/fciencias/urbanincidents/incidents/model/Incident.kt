@@ -1,5 +1,6 @@
 package com.unam.fciencias.urbanincidents.incident.model
 
+import com.unam.fciencias.urbanincidents.enums.*
 import com.unam.fciencias.urbanincidents.validator.*
 import jakarta.validation.constraints.*
 import java.time.LocalDate
@@ -16,7 +17,7 @@ object ValidationMessages {
 }
 
 data class PublicationDates(
-    val reported: LocalDate,
+    val reported: LocalDate?,
     val inProgress: LocalDate?,
     val resolution: LocalDate?,
 )
@@ -25,24 +26,23 @@ data class PublicationDates(
 data class Incident(
     @Id val id: String? = null,
     val ownerId: String,
-    val state: String,
-    val type: String,
+    val state: INCIDENT_STATE,
+    val type: INCIDENT_TYPE,
     val images: List<String>,
     val dates: PublicationDates,
     val location: GeoJsonPoint
 )
 
 data class CreateIncident(
-    @field:ValidState val state: String,
+    @field:ValidState val state: INCIDENT_STATE,
     val ownerId: String,
-    @field:ValidType val type: String,
+    @field:ValidType val type: INCIDENT_TYPE,
     val location: GeoJsonPoint,
 )
 
 data class UpdateIncident(
     val id: String, 
     @field:ValidState
-    val state: String,
-    @field:ValidPublicationDates
-    val dates: PublicationDates,
+    val state: INCIDENT_STATE? = null,
+    val dates: PublicationDates? = null,
 )

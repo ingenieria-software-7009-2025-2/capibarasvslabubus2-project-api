@@ -40,12 +40,11 @@ class IncidentController(
 
 
     // @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    // fun updateIncident(@Valid @RequestPart("incident") updateRequest : UpdateIncident, @RequestParam("images") images : List<MultipartFile>) : ResponseEntity<Incident> {
-    //     validateImagesList(images)
+    // fun updateIncident(@Valid @RequestPart("incident") updateRequest : UpdateIncident, @RequestParam("images") images : List<MultipartFile>?) : ResponseEntity<Incident> {
     //     return ResponseEntity.status(HttpStatus.OK).body(incidentService.updateIncident(updateRequest, images))
     // }
 
-    fun validateImagesList(images: List<MultipartFile>) {
+    fun validateImagesList(images: List<MultipartFile>) : Unit {
         if (images.isEmpty()) {
             throw InvalidImagesListException("The list of incident images can't be empty")
         }
@@ -54,6 +53,7 @@ class IncidentController(
                 throw InvalidImagesListException("The list can't contain an empty image")
             }
         }
+        return 
     }
 
 }

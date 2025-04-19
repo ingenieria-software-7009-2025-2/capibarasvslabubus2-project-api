@@ -1,5 +1,25 @@
-package com.unam.fciencias.urbanincidents.enum
+package com.unam.fciencias.urbanincidents.enums
 
-enum class INCIDENT_TYPE {
-  AUTOMOTIVE, ROAD_INFRASTRUCTURE, NATURAL_PHENOMENA, ARCHITECTURE, OTHERS,
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonValue
+
+enum class INCIDENT_TYPE(private val type: String) {
+    AUTOMOTIVE("automotive"),
+    ROAD_INFRASTRUCTURE("road_infrastructure"),
+    NATURAL_PHENOMENA("natural_phenomena"),
+    ARCHITECTURE("architecture"),
+    OTHERS("others");
+
+    @JsonValue
+    fun toValue(): String = type  
+
+    companion object {
+        @JvmStatic
+        @JsonCreator
+        fun fromValue(value: String): INCIDENT_TYPE {
+            return entries.firstOrNull {
+                it.type.equals(value, ignoreCase = true)
+            } ?: throw IllegalArgumentException("No enum constant for value $value")
+        }
+    }
 }

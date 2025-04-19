@@ -31,7 +31,7 @@ class UserService(private val userRepository: UserRepository) {
                 User(
                         id = null,
                         name = request.name,
-                        role = request.role,
+                        role = request.role, 
                         email = request.email,
                         password = request.password,
                         token = "",
@@ -62,7 +62,7 @@ class UserService(private val userRepository: UserRepository) {
                 User(
                         id = userId,
                         name = user.name,
-                        role = user.role,
+                        role = user.role, 
                         email = user.email,
                         token = token,
                         password = user.password,

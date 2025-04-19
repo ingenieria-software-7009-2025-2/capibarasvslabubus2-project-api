@@ -5,6 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Document
 import jakarta.validation.constraints.*
 import jakarta.validation.Valid
 
+import com.unam.fciencias.urbanincidents.validator.NullableNotBlank
+import com.unam.fciencias.urbanincidents.validator.ValidRole
+
 const val MIN_LENGTH_PASSWORD = 6
 const val MAX_LENGTH_PASSWORD = 20
 
@@ -34,6 +37,7 @@ data class Name(
     @field:Size(min = MIN_LENGTH_NAME, max = MAX_LENGTH_NAME, message = ValidationMessages.FIRST_NAME_SIZE)
     val firstName: String,
 
+    @field:NullableNotBlank(message = ValidationMessages.MIDDLE_NAME_EMPTY)
     @field:Size(min = MIN_LENGTH_NAME, max = MAX_LENGTH_NAME, message = ValidationMessages.MIDDLE_NAME_SIZE)
     val middleName: String?,
 
@@ -75,6 +79,7 @@ data class CreateUser(
     val name: Name,
 
     @field:NotBlank(message = ValidationMessages.ROLE_EMPTY)
+    @field:ValidRole
     val role: String,
 
     @field:Email(message = ValidationMessages.EMAIL_INVALID)

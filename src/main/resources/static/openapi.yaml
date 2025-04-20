@@ -19,7 +19,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateUser"
+              $ref: "#/components/schemas/CreaterUserRequest"
             examples:
               Request Example:
                 value:
@@ -149,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateUserRequest"
+              $ref: "#/components/schemas/PatchUserRequest"
       responses:
         "200":
           description: Successfully updated user information.
@@ -170,7 +170,7 @@ paths:
           description: User not found.
 components:
   schemas:
-    CreateUser:
+    CreaterUserRequest:
       type: object
       properties:
         email:
@@ -202,7 +202,7 @@ components:
           type: string
       required:
         - token
-    UpdateUserRequest:
+    PatchUserRequest:
       type: object
       properties:
         email:

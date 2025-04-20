@@ -416,7 +416,7 @@ El usuario debe tener una sesión activa con un token válido.
 
 **Create User:**
 
-![CreateUser](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_CreateUser.png)
+![CreaterUserRequest](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_CreaterUserRequest.png)
 
 **Get User:**
 
@@ -470,4 +470,4 @@ El usuario debe tener una sesión activa con un token válido.
 
 **Update Incident State:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_UpdateIncidentState.png" alt="UpdateIncidentState" width="620px">
+<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_PatchIncidentRequestState.png" alt="PatchIncidentRequestState" width="620px">

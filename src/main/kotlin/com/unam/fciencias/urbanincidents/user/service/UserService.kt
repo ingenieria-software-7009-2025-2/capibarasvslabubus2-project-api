@@ -12,18 +12,91 @@ import java.util.UUID
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
+/**
+ * Service responsible for managing users, including creation, authentication, updates, and
+ * interaction with related incidents.
+ */
 @Service
 class UserService(
         private val userRepository: UserRepository,
         @Lazy private val incidentService: IncidentService
 ) {
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id The user's ID.
+     * @return The user associated with the ID.
+     * @throws UserNotFoundException If the user is not found.
+     */
+    fun getUserById(id: String): User =
+            userRepository.findById(id).orElseThrow { UserNotFoundException() }
+
+    /**
+     * Retrieves all users.
+     *
+     * @return A list of all users.
+     */
+    fun getUsers(): List<User> = userRepository.findAll()
+
+    /**
+     * Retrieves a user by their token.
+     *
+     * @param token The user's token.
+     * @return The corresponding user.
+     * @throws InvalidTokenException If the token is invalid or expired.
+     */
+    fun getUserByToken(token: String): User =
+            userRepository.findByToken(token)
+                    ?: throw InvalidTokenException(
+                            InvalidTokenException.generateMessageWithToken(token)
+                    )
+
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email The email to search for.
+     * @return The user with the given email.
+     * @throws EmailNotFoundException If no user is found with that email.
+     */
+    fun getUserByEmail(email: String): User =
+            userRepository.findByEmail(email)
+                    ?: throw EmailNotFoundException(
+                            EmailNotFoundException.generateMessageWithEmail(email)
+                    )
+
+    /**
+     * Retrieves the role of a user by their token.
+     *
+     * @param token The user's token.
+     * @return The role of the user.
+     * @throws InvalidTokenException If the token is invalid or expired.
+     */
+    fun getUserRoleByToken(token: String): USER_ROLE =
+            userRepository.findUserRoleByToken(token) ?: throw InvalidTokenException()
+
+    /**
+     * Checks if a user exists by their ID.
+     *
+     * @param id The user ID.
+     * @return True if the user exists, false otherwise.
+     */
+    fun existsUserById(id: String): Boolean = userRepository.findById(id).isPresent()
+
+    /**
+     * Creates a new user.
+     *
+     * @param request The data required to create the user.
+     * @return The created user.
+     * @throws UserAlreadyExistsException If a user with the given email already exists.
+     */
     fun createUser(request: CreaterUserRequest): User {
         userRepository.findByEmail(request.email)?.let {
             throw UserAlreadyExistsException(
                     UserAlreadyExistsException.generateMessageWithEmail(request.email)
             )
         }
+
         val user =
                 User(
                         id = null,
@@ -37,6 +110,13 @@ class UserService(
         return userRepository.save(user)
     }
 
+    /**
+     * Logs in a user by validating their email and password.
+     *
+     * @param loginRequest The login credentials.
+     * @return The authenticated user with a new token.
+     * @throws UserNotFoundException If the user is not found.
+     */
     fun loginUser(loginRequest: LoginRequest): User? {
         val user =
                 userRepository.findByEmailAndPassword(loginRequest.email, loginRequest.password)
@@ -45,32 +125,36 @@ class UserService(
                         )
 
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
-
         val token = UUID.randomUUID().toString()
         userRepository.updateTokenById(userId, token)
 
-        val myUser =
-                User(
-                        id = userId,
-                        name = user.name,
-                        role = user.role,
-                        email = user.email,
-                        token = token,
-                        password = user.password,
-                        incidents = user.incidents,
-                )
-        return myUser
+        return user.copy(token = token)
     }
 
-    fun logoutUser(token: String): Unit {
+    /**
+     * Logs out a user by clearing their token.
+     *
+     * @param token The user's current token.
+     * @throws InvalidTokenException If the token is invalid.
+     */
+    fun logoutUser(token: String) {
         val userFound =
                 userRepository.findByToken(token)
                         ?: throw InvalidTokenException(
                                 InvalidTokenException.generateMessageWithToken(token)
                         )
+
         userRepository.updateTokenById(userFound.id.toString(), "")
     }
 
+    /**
+     * Partially updates the user's fields using the provided token.
+     *
+     * @param token The user's authentication token.
+     * @param updateRequest The fields to be updated.
+     * @return The updated user.
+     * @throws InvalidTokenException If the token is invalid.
+     */
     fun patchUserByToken(token: String, updateRequest: PatchUserRequest): User {
         val user =
                 userRepository.findByToken(token)
@@ -83,16 +167,22 @@ class UserService(
         isValidUpdate(userId, updateRequest.email, updateRequest.incidents)
 
         updateRequest.incidents?.let { userRepository.patchIncidentsById(userId, it) }
-
         updateRequest.email?.let { userRepository.updateEmailById(userId, it) }
-
         updateRequest.password?.let { userRepository.updatePasswordById(userId, it) }
-
         updateRequest.name?.let { userRepository.updateNameById(userId, it) }
 
         return getUserById(userId)
     }
 
+    /**
+     * Validates update input fields such as email uniqueness and incident IDs.
+     *
+     * @param userId The ID of the user to update.
+     * @param email The new email (optional).
+     * @param incidents The new incidents list (optional).
+     * @throws UserAlreadyExistsException If the email is already in use.
+     * @throws InvalidIncidentIdException If incident IDs are invalid or duplicated.
+     */
     fun isValidUpdate(userId: String, email: String?, incidents: List<String>?) {
         email?.let {
             val existingUser = userRepository.findByEmail(it)
@@ -118,26 +208,4 @@ class UserService(
             }
         }
     }
-
-    fun getUserRoleByToken(token: String): USER_ROLE =
-            userRepository.findUserRoleByToken(token) ?: throw InvalidTokenException()
-
-    fun getUserByToken(token: String): User =
-            userRepository.findByToken(token)
-                    ?: throw InvalidTokenException(
-                            InvalidTokenException.generateMessageWithToken(token)
-                    )
-
-    fun getUserById(id: String): User =
-            userRepository.findById(id).orElseThrow { UserNotFoundException() }
-
-    fun getUsers(): List<User> = userRepository.findAll()
-
-    fun getUserByEmail(email: String): User =
-            userRepository.findByEmail(email)
-                    ?: throw EmailNotFoundException(
-                            EmailNotFoundException.generateMessageWithEmail(email)
-                    )
-
-    fun existsUserById(id: String): Boolean = userRepository.findById(id).isPresent()
 }

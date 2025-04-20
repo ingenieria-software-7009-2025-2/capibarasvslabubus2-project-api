@@ -1,5 +1,6 @@
 package com.unam.fciencias.urbanincidents.user.repository
 
+import com.unam.fciencias.urbanincidents.enums.USER_ROLE
 import com.unam.fciencias.urbanincidents.user.model.Name
 import com.unam.fciencias.urbanincidents.user.model.User
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -7,6 +8,8 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.stereotype.Repository
+
+data class UserRoleProjection(val role: USER_ROLE?)
 
 @Repository
 class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserRepositoryCustom {
@@ -43,9 +46,17 @@ class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserReposit
         mongoTemplate.updateFirst(query, update, User::class.java)
     }
 
-    override fun updateIncidentsById(id: String, incidents: List<String>) {
+    override fun patchIncidentsById(id: String, incidents: List<String>) {
         val query = Query(Criteria.where("_id").`is`(id))
         val update = Update().set(PropertyNames.INCIDENTS, incidents)
         mongoTemplate.updateFirst(query, update, User::class.java)
+    }
+
+    override fun findUserRoleByToken(token: String): USER_ROLE? {
+        val query = Query(Criteria.where("token").`is`(token))
+
+        // implementar la proyeccion
+        val roleOnly = mongoTemplate.findOne(query, User::class.java)
+        return roleOnly?.role
     }
 }

@@ -12,14 +12,15 @@ const val MIN_LENGTH_DESCRIPTION = 10
 const val MAX_LENGHT_DESCRIPTION = 200
 
 object ValidationMessages {
-    const val INCIDENT_STATE_EMPTY = "The state can't be empty"
-    const val OWNER_ID_EMTPY = "The owner id can't be empty"
-    const val INCIDENT_TYPE_EMPTY = "The type of the incident can't be empty"
-    const val LIST_IMAGES_EMPTY = "The list of images can't be empty"
-    const val DESCRIPTION_EMPTY = "The description of the incident can't be empty"
+        const val INCIDENT_STATE_EMPTY = "The state can't be empty"
+        const val OWNER_ID_EMTPY = "The owner id can't be empty"
+        const val INCIDENT_TYPE_EMPTY = "The type of the incident can't be empty"
+        const val LIST_IMAGES_EMPTY = "The list of images can't be empty"
+        const val DESCRIPTION_EMPTY = "The description of the incident can't be empty"
+        const val USER_TOKEN_EMTPY = "The user token can't be empy"
 
-    const val DESCRIPTION_SIZE =
-            "Description must be at least $MIN_LENGTH_DESCRIPTION characters and at most $MAX_LENGHT_DESCRIPTION characters"
+        const val DESCRIPTION_SIZE =
+                "Description must be at least $MIN_LENGTH_DESCRIPTION characters and at most $MAX_LENGHT_DESCRIPTION characters"
 }
 
 data class SpecificState(
@@ -35,15 +36,16 @@ data class States(
 
 @Document("incidents")
 data class Incident(
-        @Id val id: String? = null,
+        @Id val id: String?,
         val ownerId: String,
         val type: INCIDENT_TYPE,
         val states: States,
         val description: String,
-        val location: GeoJsonPoint
+        val location: GeoJsonPoint,
+        val archived: Boolean,
 )
 
-data class CreateIncident(
+data class CreateIncidentRequest(
         val ownerId: String,
         val type: INCIDENT_TYPE,
         @field:NotBlank(message = ValidationMessages.DESCRIPTION_EMPTY)
@@ -56,8 +58,9 @@ data class CreateIncident(
         val location: GeoJsonPoint,
 )
 
-data class UpdateIncident(
+data class PatchIncidentRequest(
         val id: String,
+        @field:NotBlank(message = ValidationMessages.USER_TOKEN_EMTPY) val userToken: String,
         val state: INCIDENT_STATE,
         val type: INCIDENT_TYPE?,
         @field:NullableNotBlank(message = ValidationMessages.DESCRIPTION_EMPTY)
@@ -69,4 +72,5 @@ data class UpdateIncident(
         val description: String?,
         val date: LocalDate?,
         val location: GeoJsonPoint?,
+        val archived: Boolean,
 )

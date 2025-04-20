@@ -8,6 +8,7 @@ import com.unam.fciencias.urbanincidents.user.model.*
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import java.time.LocalDate
 import java.util.Base64
+import org.springframework.data.mongodb.core.geo.GeoJsonPoint
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -20,9 +21,16 @@ class IncidentService(
     fun getIncidentById(id: String): Incident =
             incidentRepository.findById(id).orElseThrow { IncidentNotFoundException() }
 
-    fun createIncident(incidentInfo: CreateIncident, images: List<MultipartFile>): Incident {
+    fun createIncident(
+            incidentInfo: CreateIncidentRequest,
+            images: List<MultipartFile>?
+    ): Incident {
         if (!userService.existsUserById(incidentInfo.ownerId)) {
             throw UserNotFoundException()
+        }
+
+        if (images == null || images.isEmpty()) {
+            throw InvalidImagesListException("The images list is null or empty")
         }
 
         val reportedState: SpecificState =
@@ -42,31 +50,35 @@ class IncidentService(
                         type = incidentInfo.type,
                         description = incidentInfo.description,
                         location = incidentInfo.location,
+                        archived = false,
                 )
 
         return incidentRepository.save(newIncident)
     }
 
-    fun updateIncident(updateRequest: UpdateIncident, images: List<MultipartFile>?): Incident {
+    fun patchIncident(updateRequest: PatchIncidentRequest, images: List<MultipartFile>?): Incident {
 
         val incident: Incident = getIncidentById(updateRequest.id)
+        val userRole: USER_ROLE = userService.getUserRoleByToken(updateRequest.userToken)
 
-        isValidUpdate(incident, updateRequest.date, updateRequest.state)
+        isValidUpdate(
+                incident,
+                updateRequest.state,
+                images,
+                updateRequest.date,
+                updateRequest.description,
+                updateRequest.type,
+                updateRequest.location,
+                updateRequest.archived,
+                userRole,
+        )
 
-        val encodedImages: List<String> = listOfEncodedImages(images)
-
-        if (encodedImages.isNotEmpty()) {
+        images?.let {
             incidentRepository.updateStateImagesById(
                     updateRequest.id,
-                    encodedImages,
+                    listOfEncodedImages(images),
                     updateRequest.state
             )
-        } else {
-            if (updateRequest.date != null) {
-                throw InvalidIncidentUpdateException(
-                        "You can't update an incident state without providing evidence (images)"
-                )
-            }
         }
 
         updateRequest.date?.let {
@@ -92,9 +104,35 @@ class IncidentService(
         return getIncidentById(updateRequest.id)
     }
 
-    private fun isValidUpdate(incident: Incident, newDate: LocalDate?, newState: INCIDENT_STATE) {
+    private fun isValidUpdate(
+            incident: Incident,
+            newState: INCIDENT_STATE,
+            images: List<MultipartFile>?,
+            newDate: LocalDate?,
+            newDescription: String?,
+            newType: INCIDENT_TYPE?,
+            newLocation: GeoJsonPoint?,
+            newArchivedState: Boolean?,
+            userRole: USER_ROLE,
+    ) {
+        isImagesListValid(
+                images,
+                newDate != null,
+                newDescription != null,
+                newType != null,
+                newLocation != null
+        )
         isNewStateValid(incident, newState)
         isNewDateValid(incident, newDate, newState)
+        isNewArchivedStateValid(newArchivedState != null, userRole)
+    }
+
+    private fun isNewArchivedStateValid(modifyArchivedValue: Boolean, userRole: USER_ROLE) {
+        if (modifyArchivedValue && !userRole.equals(USER_ROLE.ADMIN)) {
+            throw InvalidIncidentUpdateException(
+                    "You can't modify the archived value of a publication if you are not an admin user"
+            )
+        }
     }
 
     private fun isNewDateValid(incident: Incident, newDate: LocalDate?, newState: INCIDENT_STATE) {
@@ -158,8 +196,37 @@ class IncidentService(
         return INCIDENT_STATE.REPORTED
     }
 
-    private fun listOfEncodedImages(images: List<MultipartFile>?): List<String> =
-            images?.map { encodeImageAsBase64(it) } ?: emptyList()
+    private fun isImagesListValid(
+            images: List<MultipartFile>?,
+            modifyDate: Boolean,
+            modifyDescription: Boolean,
+            modifyType: Boolean,
+            modifyLocation: Boolean
+    ) {
+        if (images == null || images.isEmpty()) {
+            val modifications = mutableListOf<String>()
+
+            if (modifyDate) modifications += "date"
+            if (modifyDescription) modifications += "description"
+            if (modifyType) modifications += "type"
+            if (modifyLocation) modifications += "location"
+
+            if (modifications.isNotEmpty()) {
+                val fields = modifications.joinToString(", ")
+                throw InvalidImagesListException(
+                        "Cannot modify the following fields without providing images: $fields"
+                )
+            }
+        }
+
+        if (images != null && images.isEmpty()) {
+            throw InvalidImagesListException("The images list is empty")
+        }
+    }
+
+    private fun listOfEncodedImages(images: List<MultipartFile>): List<String> {
+        return images.map { encodeImageAsBase64(it) }
+    }
 
     private fun encodeImageAsBase64(image: MultipartFile): String =
             Base64.getEncoder().encodeToString(image.bytes)

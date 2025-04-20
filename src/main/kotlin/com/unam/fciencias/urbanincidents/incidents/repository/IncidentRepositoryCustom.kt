@@ -10,4 +10,5 @@ interface IncidentRepositoryCustom {
   fun updateStateDateById(id: String, date: LocalDate, state: INCIDENT_STATE)
   fun updateTypeById(id: String, type: INCIDENT_TYPE)
   fun updateLocationById(id: String, location: GeoJsonPoint)
+  fun updateArchivedStateById(id: String, archivedState: Boolean)
 }

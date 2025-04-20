@@ -1,5 +1,6 @@
 package com.unam.fciencias.urbanincidents.user.service
 
+import com.unam.fciencias.urbanincidents.enums.USER_ROLE
 import com.unam.fciencias.urbanincidents.exception.*
 import com.unam.fciencias.urbanincidents.incident.service.IncidentService
 import com.unam.fciencias.urbanincidents.user.model.CreaterUserRequest
@@ -79,44 +80,47 @@ class UserService(
 
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
 
-        updateRequest.email?.let { newEmail ->
-            val existingUser = userRepository.findByEmail(newEmail)
-            if (existingUser != null && existingUser.id != userId) {
-                throw UserAlreadyExistsException(
-                        UserAlreadyExistsException.generateMessageWithEmail(newEmail)
-                )
-            }
-            userRepository.updateEmailById(userId, newEmail)
-        }
+        isValidUpdate(userId, updateRequest.email, updateRequest.incidents)
+
+        updateRequest.incidents?.let { userRepository.patchIncidentsById(userId, it) }
+
+        updateRequest.email?.let { userRepository.updateEmailById(userId, it) }
 
         updateRequest.password?.let { userRepository.updatePasswordById(userId, it) }
 
         updateRequest.name?.let { userRepository.updateNameById(userId, it) }
 
-        updateRequest.incidents?.let { incidents ->
+        return getUserById(userId)
+    }
+
+    fun isValidUpdate(userId: String, email: String?, incidents: List<String>?) {
+        email?.let {
+            val existingUser = userRepository.findByEmail(it)
+            if (existingUser != null && existingUser.id != userId) {
+                throw UserAlreadyExistsException(
+                        UserAlreadyExistsException.generateMessageWithEmail(it)
+                )
+            }
+        }
+
+        incidents?.let {
             val incidentsIds = mutableSetOf<String>()
-            for (incidentId in incidents) {
+            for (incidentId in it) {
                 if (incidentId.isNullOrBlank() || !incidentService.existsIncidentById(incidentId)) {
                     throw InvalidIncidentIdException("Invalid id for an incident in the given list")
                 }
                 incidentsIds.add(incidentId)
             }
-
-            if (incidentsIds.size != updateRequest.incidents.size) {
+            if (incidentsIds.size != incidents.size) {
                 throw InvalidIncidentIdException(
                         "You can't set the same id for a publication twice"
                 )
             }
-            userRepository.updateIncidentsById(userId, updateRequest.incidents)
         }
-
-        return user.copy(
-                name = updateRequest.name ?: user.name,
-                email = updateRequest.email ?: user.email,
-                password = updateRequest.password ?: user.password,
-                incidents = updateRequest.incidents ?: user.incidents,
-        )
     }
+
+    fun getUserRoleByToken(token: String): USER_ROLE =
+            userRepository.findUserRoleByToken(token) ?: throw InvalidTokenException()
 
     fun getUserByToken(token: String): User =
             userRepository.findByToken(token)

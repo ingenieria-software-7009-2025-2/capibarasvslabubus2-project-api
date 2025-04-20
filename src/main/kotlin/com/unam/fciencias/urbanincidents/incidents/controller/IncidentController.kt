@@ -27,7 +27,7 @@ class IncidentController(private val incidentService: IncidentService) {
 
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createIncident(
-            @Valid @RequestPart("incident") incidentInfo: CreateIncident,
+            @Valid @RequestPart("incident") incidentInfo: CreateIncidentRequest,
             @RequestPart("images") images: List<MultipartFile>
     ): ResponseEntity<Incident> {
         validateImagesList(images)
@@ -35,13 +35,13 @@ class IncidentController(private val incidentService: IncidentService) {
                 .body(incidentService.createIncident(incidentInfo, images))
     }
 
-    @PutMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun updateIncident(
-            @Valid @RequestPart("incident") updateRequest: UpdateIncident,
+    @PatchMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun patchIncident(
+            @Valid @RequestPart("incident") updateRequest: PatchIncidentRequest,
             @RequestParam("images") images: List<MultipartFile>?
     ): ResponseEntity<Incident> {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(incidentService.updateIncident(updateRequest, images))
+                .body(incidentService.patchIncident(updateRequest, images))
     }
 
     fun validateImagesList(images: List<MultipartFile>) {

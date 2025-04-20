@@ -20,6 +20,7 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
         const val LOCATION = "location"
         const val TYPE = "type"
         const val DESCRIPTION = "description"
+        const val ARCHIVED = "archived"
     }
 
     override fun updateStateImagesById(id: String, images: List<String>, state: INCIDENT_STATE) {
@@ -55,6 +56,12 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
     override fun updateTypeById(id: String, type: INCIDENT_TYPE) {
         val query = Query(Criteria.where("_id").`is`(id))
         val update = Update().set(PropertyNames.TYPE, type)
+        mongoTemplate.updateFirst(query, update, Incident::class.java)
+    }
+
+    override fun updateArchivedStateById(id: String, archivedState: Boolean) {
+        val query = Query(Criteria.where("_id").`is`(id))
+        val update = Update().set(PropertyNames.ARCHIVED, archivedState)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
     }
 

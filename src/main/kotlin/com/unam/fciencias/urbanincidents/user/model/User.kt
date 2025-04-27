@@ -14,26 +14,26 @@ const val MIN_LENGTH_NAME = 1
 const val MAX_LENGTH_NAME = 30
 
 object ValidationMessages {
-    const val FIRST_NAME_EMPTY = "First name can't be empty"
-    const val MIDDLE_NAME_EMPTY = "Middle name can't be empty"
-    const val FATHER_LAST_NAME_EMPTY = "Father last name can't be empty"
-    const val MOTHER_LAST_NAME_EMPTY = "Mother last name can't be empty"
-    const val USER_ROLE_EMPTY = "Role can't be empty"
-    const val PASSWORD_EMPTY = "Password can't be empty"
-    const val TOKEN_EMPTY = "Token can't be empty"
+        const val FIRST_NAME_EMPTY = "First name can't be empty"
+        const val MIDDLE_NAME_EMPTY = "Middle name can't be empty"
+        const val FATHER_LAST_NAME_EMPTY = "Father last name can't be empty"
+        const val MOTHER_LAST_NAME_EMPTY = "Mother last name can't be empty"
+        const val USER_ROLE_EMPTY = "Role can't be empty"
+        const val PASSWORD_EMPTY = "Password can't be empty"
+        const val TOKEN_EMPTY = "Token can't be empty"
 
-    const val EMAIL_INVALID = "Invalid email"
+        const val EMAIL_INVALID = "Invalid email"
 
-    const val PASSWORD_SIZE =
-            "Password must be at least $MIN_LENGTH_PASSWORD characters and at most $MAX_LENGTH_PASSWORD characters"
-    const val FIRST_NAME_SIZE =
-            "First name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
-    const val MIDDLE_NAME_SIZE =
-            "Middle name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
-    const val FATHER_LAST_NAME_SIZE =
-            "Father last name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
-    const val MOTHER_LAST_NAME_SIZE =
-            "Mother last name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
+        const val PASSWORD_SIZE =
+                "Password must be at least $MIN_LENGTH_PASSWORD characters and at most $MAX_LENGTH_PASSWORD characters"
+        const val FIRST_NAME_SIZE =
+                "First name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
+        const val MIDDLE_NAME_SIZE =
+                "Middle name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
+        const val FATHER_LAST_NAME_SIZE =
+                "Father last name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
+        const val MOTHER_LAST_NAME_SIZE =
+                "Mother last name must be at least $MIN_LENGTH_NAME characters and at most $MAX_LENGTH_NAME characters"
 }
 
 data class Name(
@@ -104,10 +104,6 @@ data class LoginRequest(
                 message = ValidationMessages.PASSWORD_SIZE
         )
         val password: String
-)
-
-data class LogoutRequest(
-        @field:NotBlank(message = ValidationMessages.TOKEN_EMPTY) val token: String
 )
 
 data class PatchUserRequest(

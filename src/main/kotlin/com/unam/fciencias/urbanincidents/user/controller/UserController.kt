@@ -3,7 +3,6 @@ package com.unam.fciencias.urbanincidents.user.controller
 import com.unam.fciencias.urbanincidents.exception.*
 import com.unam.fciencias.urbanincidents.user.model.CreaterUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
-import com.unam.fciencias.urbanincidents.user.model.LogoutRequest
 import com.unam.fciencias.urbanincidents.user.model.PatchUserRequest
 import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.service.UserService
@@ -105,12 +104,12 @@ class UserController(private val userService: UserService) {
      * @throws TokenEmptyOrNullException if the token is missing or empty.
      */
     @PostMapping("/logout")
-    fun logoutUser(@Valid @RequestBody logoutRequest: LogoutRequest): ResponseEntity<String?> {
-        if (logoutRequest.token.isEmpty()) {
+    fun logoutUser(@Valid @RequestHeader("Authorization") token: String?): ResponseEntity<String?> {
+        if (token.isNullOrEmpty()) {
             throw TokenEmptyOrNullException()
         }
 
-        userService.logoutUser(logoutRequest.token)
+        userService.logoutUser(token)
         return ResponseEntity.status(HttpStatus.OK).body("Session closed")
     }
 

@@ -8,6 +8,7 @@ import com.unam.fciencias.urbanincidents.user.model.*
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import java.time.LocalDate
 import java.util.Base64
+import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -21,6 +22,8 @@ class IncidentService(
         private val incidentRepository: IncidentRepository,
         private val userService: UserService
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
      * Retrieves an incident by its ID.
@@ -39,6 +42,20 @@ class IncidentService(
      * @return True if the incident exists, false otherwise.
      */
     fun existsIncidentById(id: String): Boolean = incidentRepository.findById(id).isPresent()
+
+    /**
+     * Returns a list with the incidents that match the values in the given list
+     *
+     * @param types The list with the types that an incident mush have.
+     * @param states The list with the states that the incident must have.
+     * @param archived The archived value that the incident must have.
+     * @return The incidents that match the past criteria.
+     */
+    fun getFilterIncidents(
+            types: List<INCIDENT_TYPE>,
+            states: List<INCIDENT_STATE>,
+            archived: Boolean
+    ): List<Incident> = incidentRepository.getFilterIncidents(types, states, archived)
 
     /**
      * Creates a new incident with an initial "reported" state.

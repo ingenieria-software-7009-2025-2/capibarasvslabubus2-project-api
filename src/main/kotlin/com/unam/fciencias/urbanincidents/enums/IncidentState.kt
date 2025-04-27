@@ -3,9 +3,9 @@ package com.unam.fciencias.urbanincidents.enums
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
-enum class INCIDENT_STATE(private val state: String) {
+enum class INCIDENT_STATE(val state: String) {
     REPORTED("reported"),
-    IN_PROGRESS("in progress"),
+    IN_PROGRESS("inProgress"),
     SOLVED("solved");
 
     val stateLowerCase: String

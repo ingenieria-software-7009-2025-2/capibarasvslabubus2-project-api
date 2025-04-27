@@ -1,11 +1,13 @@
 package com.unam.fciencias.urbanincidents.incident.controller
 
+import com.unam.fciencias.urbanincidents.enums.*
 import com.unam.fciencias.urbanincidents.exception.*
 import com.unam.fciencias.urbanincidents.incident.model.*
 import com.unam.fciencias.urbanincidents.incident.service.IncidentService
 import com.unam.fciencias.urbanincidents.user.model.*
 import jakarta.validation.Valid
 import jakarta.validation.constraints.*
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -21,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/v1/incidents")
 class IncidentController(private val incidentService: IncidentService) {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     /**
      * Retrieves an incident by its ID.
      *
@@ -29,11 +33,31 @@ class IncidentController(private val incidentService: IncidentService) {
      * @throws InvalidIncidentIdException If the ID is blank.
      */
     @GetMapping("/{id}")
-    fun getIncidentById(@PathVariable id: String): ResponseEntity<Incident> {
+    fun getIncidentsById(@PathVariable id: String): ResponseEntity<Incident> {
         if (id.isBlank()) {
             throw InvalidIncidentIdException()
         }
         return ResponseEntity.status(HttpStatus.OK).body(incidentService.getIncidentById(id))
+    }
+
+    /**
+     * Retrieves a list of incidents filter by types, states and the archived status.
+     *
+     * @param types The list of types to search.
+     * @param states The list of states to search.
+     * @param archived The status archived to search.
+     * @return The list with the incidnets that match the criteria.
+     */
+    @GetMapping
+    fun getFilterIncidents(
+            @RequestParam(required = false) type: List<INCIDENT_TYPE>?,
+            @RequestParam(required = false) state: List<INCIDENT_STATE>?,
+            @RequestParam(required = false, defaultValue = "false") archived: Boolean
+    ): ResponseEntity<List<Incident>> {
+        val safeTypes: List<INCIDENT_TYPE> = type ?: emptyList<INCIDENT_TYPE>()
+        val safeStates: List<INCIDENT_STATE> = state ?: emptyList<INCIDENT_STATE>()
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(incidentService.getFilterIncidents(safeTypes, safeStates, archived))
     }
 
     /**
@@ -45,7 +69,7 @@ class IncidentController(private val incidentService: IncidentService) {
      * @throws InvalidImagesListException If the images list is empty or contains invalid files.
      */
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createIncident(
+    fun createIncidents(
             @Valid @RequestPart("incident") incidentInfo: CreateIncidentRequest,
             @RequestPart("images") images: List<MultipartFile>
     ): ResponseEntity<Incident> {
@@ -61,7 +85,7 @@ class IncidentController(private val incidentService: IncidentService) {
      * @return A [ResponseEntity] containing the updated incident.
      */
     @PatchMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun patchIncident(
+    fun patchIncidents(
             @Valid @RequestPart("incident") updateRequest: PatchIncidentRequest,
             @RequestParam("images") images: List<MultipartFile>?
     ): ResponseEntity<Incident> {

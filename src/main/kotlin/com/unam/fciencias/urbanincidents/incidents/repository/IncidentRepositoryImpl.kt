@@ -3,6 +3,7 @@ package com.unam.fciencias.urbanincidents.incident.repository
 import com.unam.fciencias.urbanincidents.enums.*
 import com.unam.fciencias.urbanincidents.incident.model.*
 import java.time.LocalDate
+import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
 import org.springframework.data.mongodb.core.query.Criteria
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : IncidentRepositoryCustom {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     object PropertyNames {
         const val STATES = "states"
@@ -63,6 +66,40 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
         val query = Query(Criteria.where("_id").`is`(id))
         val update = Update().set(PropertyNames.ARCHIVED, archivedState)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
+    }
+
+    override fun getFilterIncidents(
+            types: List<INCIDENT_TYPE>,
+            states: List<INCIDENT_STATE>,
+            archived: Boolean
+    ): List<Incident> {
+
+        val criteriaList = mutableListOf<Criteria>()
+
+        if (types.isNotEmpty()) {
+            val matchTypes = Criteria.where(PropertyNames.TYPE).`in`(types.map { it.name })
+            criteriaList.add(matchTypes)
+        }
+
+        if (states.isNotEmpty()) {
+            val matchStates =
+                    Criteria()
+                            .orOperator(
+                                    states.map { stateEnum ->
+                                        Criteria.where("${PropertyNames.STATES}.${stateEnum.state}")
+                                                .exists(true)
+                                    }
+                            )
+            criteriaList.add(matchStates)
+        }
+
+        val matchArchivedValue = Criteria.where(PropertyNames.ARCHIVED).`is`(archived)
+        criteriaList.add(matchArchivedValue)
+
+        val filter = Criteria().andOperator(*criteriaList.toTypedArray())
+        val query = Query(filter)
+
+        return mongoTemplate.find(query, Incident::class.java)
     }
 
     private fun INCIDENT_STATE.toFieldTag(): String =

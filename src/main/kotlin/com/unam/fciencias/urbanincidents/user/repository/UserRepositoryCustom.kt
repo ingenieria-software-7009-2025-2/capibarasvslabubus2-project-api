@@ -10,4 +10,5 @@ interface UserRepositoryCustom {
     fun updateNameById(id: String, name: Name)
     fun patchIncidentsById(id: String, incidents: List<String>)
     fun findUserRoleByToken(token: String): USER_ROLE?
+    fun deleteUserById(id: String)
 }

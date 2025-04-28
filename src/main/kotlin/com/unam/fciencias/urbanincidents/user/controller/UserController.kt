@@ -54,10 +54,8 @@ class UserController(private val userService: UserService) {
      */
     @GetMapping("/me")
     fun getUserInfo(@RequestHeader("Authorization") token: String?): ResponseEntity<User> {
-        if (token.isNullOrEmpty()) {
-            throw TokenEmptyOrNullException()
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByToken(token))
+        val validatedToken = validToken(token)
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByToken(validatedToken))
     }
 
     /**
@@ -105,11 +103,8 @@ class UserController(private val userService: UserService) {
      */
     @PostMapping("/logout")
     fun logoutUser(@Valid @RequestHeader("Authorization") token: String?): ResponseEntity<String?> {
-        if (token.isNullOrEmpty()) {
-            throw TokenEmptyOrNullException()
-        }
-
-        userService.logoutUser(token)
+        val validatedToken = validToken(token)
+        userService.logoutUser(validatedToken)
         return ResponseEntity.status(HttpStatus.OK).body("Session closed")
     }
 
@@ -126,10 +121,44 @@ class UserController(private val userService: UserService) {
             @RequestHeader("Authorization") token: String?,
             @Valid @RequestBody updateRequest: PatchUserRequest
     ): ResponseEntity<User> {
+        val validatedToken = validToken(token)
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.patchUserByToken(validatedToken, updateRequest))
+    }
+
+    /**
+     * Deletes and user by their id.
+     *
+     * @param id The id of the user to eliminate
+     * @return A 204 responde if the operation was successful.
+     * @throws TokenEmptyOrNullException if the token is missing or empty.
+     * @throws InvalidUserIdException if the if of the user is blanck
+     */
+    @DeleteMapping("/{id}")
+    fun deleteUser(
+            @RequestHeader("Authorization") token: String?,
+            @PathVariable id: String
+    ): ResponseEntity<Any> {
         if (token.isNullOrEmpty()) {
             throw TokenEmptyOrNullException()
         }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(userService.patchUserByToken(token, updateRequest))
+        if (id.isBlank()) {
+            throw InvalidUserIdException()
+        }
+        userService.deleteUserById(token, id)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
+    }
+
+    /**
+     * Check if the given token is not null or empty and if so, returns an excpetion.
+     *
+     * @param token The token to check.
+     * @return The token if is not null or empty
+     */
+    private fun validToken(token: String?): String {
+        if (token.isNullOrEmpty()) {
+            throw TokenEmptyOrNullException()
+        }
+        return token
     }
 }

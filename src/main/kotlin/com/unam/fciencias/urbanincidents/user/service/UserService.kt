@@ -9,6 +9,7 @@ import com.unam.fciencias.urbanincidents.user.model.PatchUserRequest
 import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.repository.UserRepository
 import java.util.UUID
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Lazy
 import org.springframework.stereotype.Service
 
@@ -21,6 +22,8 @@ class UserService(
         private val userRepository: UserRepository,
         @Lazy private val incidentService: IncidentService
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
      * Retrieves a user by their ID.
@@ -81,7 +84,7 @@ class UserService(
      * @param id The user ID.
      * @return True if the user exists, false otherwise.
      */
-    fun existsUserById(id: String): Boolean = userRepository.findById(id).isPresent()
+    fun existsUserById(id: String): Boolean = userRepository.existsById(id)
 
     /**
      * Creates a new user.
@@ -172,6 +175,24 @@ class UserService(
         updateRequest.name?.let { userRepository.updateNameById(userId, it) }
 
         return getUserById(userId)
+    }
+
+    /**
+     * Deletes an user by the id. This operations is only valid if the given user is an admin user
+     * or if the user is trying to deleting its own account.
+     *
+     * @param token The token of the user trying to delete.
+     * @param id The id of the user to delete.
+     */
+    fun deleteUserById(token: String, id: String) {
+        val userByToken: User = getUserByToken(token)
+        if (userByToken.role != USER_ROLE.ADMIN && userByToken.id != id) {
+            throw UnauthorizedUserException()
+        }
+        if (!existsUserById(id)) {
+            throw UserNotFoundException()
+        }
+        userRepository.deleteById(id)
     }
 
     /**

@@ -2,7 +2,6 @@ package com.unam.fciencias.urbanincidents.user.repository
 
 import com.unam.fciencias.urbanincidents.enums.USER_ROLE
 import com.unam.fciencias.urbanincidents.exception.*
-import com.unam.fciencias.urbanincidents.user.model.Name
 import com.unam.fciencias.urbanincidents.user.model.User
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -23,7 +22,6 @@ class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserReposit
         const val EMAIL = "email"
         const val PASSWORD = "password"
         const val TOKEN = "token"
-        const val NAME = "name"
         const val INCIDENTS = "incidents"
     }
 
@@ -42,18 +40,6 @@ class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserReposit
     override fun updateTokenById(id: String, token: String) {
         val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         val update = Update().set(PropertyNames.TOKEN, token)
-        mongoTemplate.updateFirst(query, update, User::class.java)
-    }
-
-    override fun updateNameById(id: String, name: Name) {
-        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
-        val update = Update().set(PropertyNames.NAME, name)
-        mongoTemplate.updateFirst(query, update, User::class.java)
-    }
-
-    override fun patchIncidentsById(id: String, incidents: List<String>) {
-        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
-        val update = Update().set(PropertyNames.INCIDENTS, incidents)
         mongoTemplate.updateFirst(query, update, User::class.java)
     }
 

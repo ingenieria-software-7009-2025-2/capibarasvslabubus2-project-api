@@ -112,12 +112,11 @@ class UserService(
         val user =
                 User(
                         id = null,
-                        name = request.name,
-                        role = request.role,
+                        role = USER_ROLE.USER,
                         email = request.email,
                         password = request.password,
                         token = "",
-                        incidents = null
+                        incidents = emptyList<String>()
                 )
         return userRepository.save(user)
     }
@@ -139,7 +138,6 @@ class UserService(
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
         val token = UUID.randomUUID().toString()
         userRepository.updateTokenById(userId, token)
-
         return user.copy(token = token)
     }
 
@@ -176,12 +174,9 @@ class UserService(
 
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
 
-        isValidUpdate(userId, updateRequest.email, updateRequest.incidents)
-
-        updateRequest.incidents?.let { userRepository.patchIncidentsById(userId, it) }
+        isValidUpdate(userId, updateRequest.email)
         updateRequest.email?.let { userRepository.updateEmailById(userId, it) }
         updateRequest.password?.let { userRepository.updatePasswordById(userId, it) }
-        updateRequest.name?.let { userRepository.updateNameById(userId, it) }
 
         return getUserById(userId)
     }
@@ -232,31 +227,15 @@ class UserService(
      *
      * @param userId The ID of the user to update.
      * @param email The new email (optional).
-     * @param incidents The new incidents list (optional).
      * @throws UserAlreadyExistsException If the email is already in use.
      * @throws InvalidIncidentIdException If incident IDs are invalid or duplicated.
      */
-    fun isValidUpdate(userId: String, email: String?, incidents: List<String>?) {
+    fun isValidUpdate(userId: String, email: String?) {
         email?.let {
             val existingUser = userRepository.findByEmail(it)
             if (existingUser != null && existingUser.id != userId) {
                 throw UserAlreadyExistsException(
                         UserAlreadyExistsException.generateMessageWithEmail(it)
-                )
-            }
-        }
-
-        incidents?.let {
-            val incidentsIds = mutableSetOf<String>()
-            for (incidentId in it) {
-                if (incidentId.isNullOrBlank() || !incidentService.existsIncidentById(incidentId)) {
-                    throw InvalidIncidentIdException("Invalid id for an incident in the given list")
-                }
-                incidentsIds.add(incidentId)
-            }
-            if (incidentsIds.size != incidents.size) {
-                throw InvalidIncidentIdException(
-                        "You can't set the same id for a publication twice"
                 )
             }
         }

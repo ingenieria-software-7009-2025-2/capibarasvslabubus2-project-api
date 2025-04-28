@@ -87,6 +87,15 @@ class UserService(
     fun existsUserById(id: String): Boolean = userRepository.existsById(id)
 
     /**
+     * Retrieves the user id by his token.
+     *
+     * @param token The token of the user.
+     * @thros InvalidTokenException if the token does not correspond to a user
+     */
+    fun getUserIdByToken(token: String): String =
+            userRepository.findUserIdByToken(token) ?: throw InvalidTokenException()
+
+    /**
      * Creates a new user.
      *
      * @param request The data required to create the user.
@@ -186,14 +195,37 @@ class UserService(
      */
     fun deleteUserById(token: String, id: String) {
         val userByToken: User = getUserByToken(token)
+        val userToDelete: User = getUserById(id)
+
         if (userByToken.role != USER_ROLE.ADMIN && userByToken.id != id) {
             throw UnauthorizedUserException()
         }
-        if (!existsUserById(id)) {
-            throw UserNotFoundException()
+
+        if (userToDelete.incidents != null) {
+            for (incidentId in userToDelete.incidents) {
+                incidentService.deleteIncident(token, incidentId)
+            }
         }
         userRepository.deleteById(id)
     }
+
+    /**
+     * Removes a specific incident id from the list of incidnets of the user
+     *
+     * @param userId The user id whose list we are going to remove from.
+     * @param incidentId The incident id we are going to look to remove.
+     */
+    fun removeIncidentFromUserList(userId: String, incidentId: String) =
+            userRepository.removeIncidentFromUserList(userId, incidentId)
+
+    /**
+     * Adds a incident id to the users list.
+     *
+     * @param userId The user id wo witch we are going to add the incident id.
+     * @param incidentId The incident id to add to the user's list.
+     */
+    fun addIncidentToUserList(userId: String, incidentId: String) =
+            userRepository.pushIncidentToUserList(userId, incidentId)
 
     /**
      * Validates update input fields such as email uniqueness and incident IDs.

@@ -108,6 +108,12 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
         mongoTemplate.remove(query, Incident::class.java)
     }
 
+    override fun incidentOwnerByIncidentId(id: String): String? {
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
+        val ownerIdOnly = mongoTemplate.findOne(query, Incident::class.java)
+        return ownerIdOnly?.ownerId
+    }
+
     private fun INCIDENT_STATE.toFieldTag(): String =
             when (this) {
                 INCIDENT_STATE.REPORTED -> "reported"

@@ -81,18 +81,25 @@ class IncidentService(
         val reportedState = SpecificState(LocalDate.now(), listOfEncodedImages(images))
         val states = States(reported = reportedState, inProgress = null, solved = null)
 
-        val newIncident =
-                Incident(
-                        id = null,
-                        ownerId = incidentInfo.ownerId,
-                        states = states,
-                        type = incidentInfo.type,
-                        description = incidentInfo.description,
-                        location = incidentInfo.location,
-                        archived = false
+        val newIncident: Incident =
+                incidentRepository.save(
+                        Incident(
+                                id = null,
+                                ownerId = incidentInfo.ownerId,
+                                states = states,
+                                type = incidentInfo.type,
+                                description = incidentInfo.description,
+                                location = incidentInfo.location,
+                                archived = false
+                        )
                 )
 
-        return incidentRepository.save(newIncident)
+        val newIncidentId: String =
+                newIncident.id
+                        ?: throw throw UrbanIncidentsException("Incident ID should not be null")
+
+        userService.addIncidentToUserList(newIncident.ownerId, newIncidentId)
+        return newIncident
     }
 
     /**
@@ -150,16 +157,26 @@ class IncidentService(
      */
     fun deleteIncident(token: String, id: String) {
         val user: User = userService.getUserByToken(token)
+
+        if (!existsIncidentById(id)) {
+            throw IncidentNotFoundException()
+        }
+
         if (user.role != USER_ROLE.ADMIN && (user.incidents == null || !user.incidents.contains(id))
         ) {
             throw UnauthorizedIncidentException()
         }
 
-        if (!existsIncidentById(id)) {
-            throw IncidentNotFoundException()
-        }
+        val ownerID: String = getOwnerIdByIncidentId(id)
         incidentRepository.deleteById(id)
+        userService.removeIncidentFromUserList(ownerID, id)
     }
+
+    fun getOwnerIdByIncidentId(id: String): String =
+            incidentRepository.incidentOwnerByIncidentId(id)
+                    ?: throw InvalidIncidentIdException(
+                            "The incident with id: $id does not have an owner"
+                    )
 
     /**
      * Validates an incident update request before applying any changes.

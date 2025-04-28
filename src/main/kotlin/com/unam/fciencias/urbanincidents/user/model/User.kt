@@ -71,6 +71,8 @@ data class Token(
         @field:NotBlank(message = ValidationMessages.TOKEN_EMPTY) val token: String,
 )
 
+data class UserId(val id: String)
+
 @Document("users")
 data class User(
         @Id val id: String?,

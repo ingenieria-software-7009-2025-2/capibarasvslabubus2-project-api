@@ -18,4 +18,5 @@ interface IncidentRepositoryCustom {
           archived: Boolean
   ): List<Incident>
   fun deleteIncident(id: String)
+  fun incidentOwnerByIncidentId(id: String): String?
 }

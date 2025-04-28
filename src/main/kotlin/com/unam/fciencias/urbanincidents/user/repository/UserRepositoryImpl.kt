@@ -58,8 +58,7 @@ class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserReposit
     }
 
     override fun findUserRoleByToken(token: String): USER_ROLE? {
-        val query = Query(Criteria.where("token").`is`(token))
-
+        val query = Query(Criteria.where(PropertyNames.TOKEN).`is`(token))
         // implementar la proyeccion
         val roleOnly = mongoTemplate.findOne(query, User::class.java)
         return roleOnly?.role
@@ -68,5 +67,24 @@ class UserRepositoryImpl(private val mongoTemplate: MongoTemplate) : UserReposit
     override fun deleteUserById(id: String) {
         val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         mongoTemplate.remove(query, User::class.java)
+    }
+
+    override fun pushIncidentToUserList(userId: String, incidentId: String) {
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(userId))
+        val update = Update().push(PropertyNames.INCIDENTS, incidentId)
+        mongoTemplate.updateFirst(query, update, User::class.java)
+    }
+
+    override fun removeIncidentFromUserList(userId: String, incidentId: String) {
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(userId))
+        val update = Update().pull(PropertyNames.INCIDENTS, incidentId)
+        mongoTemplate.updateFirst(query, update, User::class.java)
+    }
+
+    override fun findUserIdByToken(token: String): String? {
+        val query = Query(Criteria.where(PropertyNames.TOKEN).`is`(token))
+        // implementar la proyeccion
+        val idOnly = mongoTemplate.findOne(query, User::class.java)
+        return idOnly?.id
     }
 }

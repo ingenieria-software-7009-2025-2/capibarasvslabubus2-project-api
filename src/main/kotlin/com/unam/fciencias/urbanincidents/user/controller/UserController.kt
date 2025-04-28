@@ -1,10 +1,9 @@
 package com.unam.fciencias.urbanincidents.user.controller
 
 import com.unam.fciencias.urbanincidents.exception.*
+import com.unam.fciencias.urbanincidents.user.model.*
 import com.unam.fciencias.urbanincidents.user.model.CreaterUserRequest
 import com.unam.fciencias.urbanincidents.user.model.LoginRequest
-import com.unam.fciencias.urbanincidents.user.model.PatchUserRequest
-import com.unam.fciencias.urbanincidents.user.model.User
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -28,11 +27,24 @@ class UserController(private val userService: UserService) {
      * @throws InvalidUserIdException if the ID is blank.
      */
     @GetMapping("/{id}")
-    fun getUserById(@PathVariable id: String): ResponseEntity<User> {
+    fun getUser(@PathVariable id: String): ResponseEntity<User> {
         if (id.isBlank()) {
             throw InvalidUserIdException()
         }
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id))
+    }
+
+    /**
+     * Retrieves the user id by his token.file
+     *
+     * @param token The token of the user to search
+     * @returns The id of the user associated with the given token
+     */
+    @GetMapping("/id")
+    fun getUserIdByToken(@RequestHeader("Authorization") token: String?): ResponseEntity<UserId> {
+        val validatedToken = validToken(token)
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(UserId(userService.getUserIdByToken(validatedToken)))
     }
 
     /**
@@ -102,7 +114,7 @@ class UserController(private val userService: UserService) {
      * @throws TokenEmptyOrNullException if the token is missing or empty.
      */
     @PostMapping("/logout")
-    fun logoutUser(@Valid @RequestHeader("Authorization") token: String?): ResponseEntity<String?> {
+    fun logoutUser(@RequestHeader("Authorization") token: String?): ResponseEntity<String?> {
         val validatedToken = validToken(token)
         userService.logoutUser(validatedToken)
         return ResponseEntity.status(HttpStatus.OK).body("Session closed")

@@ -1,0 +1,808 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Urban Incidents Collection",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/{version}",
+      "variables": {
+        "version": {
+          "default": "v1",
+          "enum": [
+            "v1",
+            "v2"
+          ]
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "TokenAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    },
+    "responses": {
+      "200Response": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            },
+            "examples": {
+              "success": {
+                "summary": "Successful response",
+                "value": {
+                  "id": "680f24d61db1004141ef7e53",
+                  "email": "juan@example.com",
+                  "password": "password123",
+                  "role": "USER",
+                  "token": "8d4119dc-7950-43a0-8f55-cdd04a060922",
+                  "incidents": [
+                    "680f26501db1004141ef7eb4",
+                    "680f26511db1004141ef7eb5"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "409Response": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UrbanIncidentException"
+            },
+            "examples": {
+              "error": {
+                "summary": "User with the email already exists",
+                "value": {
+                  "status": 409,
+                  "error": "User with email repeatedEmail@gmail.com already exists",
+                  "exceptionType": "UserAlreadyExistsException"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400Response": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "examples": {
+              "error": {
+                "summary": "Error response",
+                "value": {
+                  "status": 404,
+                  "error": "Not Found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "UrbanIncidentException": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "exceptionType": {
+            "type": "string"
+          }
+        }
+      },
+      "Token": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UserId": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ]
+          },
+          "token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "incidents": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        }
+      },
+      "PatchUserRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 20
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "All CRUD operations related to the user"
+    },
+    {
+      "name": "Incidents",
+      "description": "All CRUD operations related to the incident"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get a list of all the registered users",
+        "responses": {
+          "200": {
+            "description": "Successful request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful response",
+                    "value": [
+                      {
+                        "id": "680f24d61db1004141ef7e53",
+                        "email": "juan@example.com",
+                        "password": "password123",
+                        "role": "USER",
+                        "token": "8d4119dc-7950-43a0-8f55-cdd04a060922",
+                        "incidents": [
+                          "680f26501db1004141ef7eb4",
+                          "680f26511db1004141ef7eb5"
+                        ]
+                      },
+                      {
+                        "id": "680f24d61db1004141ef7e54",
+                        "email": "ana@example.com",
+                        "password": "password456",
+                        "role": "ADMIN",
+                        "token": "d14c2ca8-18ee-4e2a-8316-db29a6c1c1b8",
+                        "incidents": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "CreateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/CreateUserRequest",
+                "example": {
+                  "email": "exampleo@gmail.com",
+                  "password": "examplePassword"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Response"
+          },
+          "400": {
+            "description": "Invalid Email, Invalid Password, Invalid JSON format, etc."
+          },
+          "409": {
+            "description": "User with the email already exists"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "GetByID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Response"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "DeleteUser",
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ee71e061-a140-4dfe-a069-ecdf9d1e1cc1"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "example": "680f24d61db1004141ef7e53"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "400": {
+            "description": "User not found"
+          },
+          "401": {
+            "description": "Not authorized"
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "GetME",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "759e72c1-2d0f-471b-ade8-349cdf974443"
+          }
+        ],
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Response"
+          },
+          "400": {
+            "description": "Missing token"
+          },
+          "404": {
+            "description": "Not user found with the given token"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/components/schemas/PatchUserRequest",
+                "example": {
+                  "email": "ejemplo@gmail.com",
+                  "password": "contraseñaEjemplo"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "759e72c1-2d0f-471b-ade8-349cdf974443"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Response"
+          },
+          "400": {
+            "description": "Invalid Email, Invalid Password, Invalid Token, Invalid JSON format, etc."
+          },
+          "404": {
+            "description": "User not found with the given token"
+          },
+          "409": {
+            "description": "User with the email already exists"
+          }
+        }
+      }
+    },
+    "/users/id": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "GetIDByToken",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "74c7ea62-b8a7-4615-a0d8-33e692830ef2"
+          }
+        ],
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful response",
+                    "value": {
+                      "id": "680f24d61db1004141ef7e53"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing token"
+          },
+          "404": {
+            "description": "User not found with the given token"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "ola@gmail",
+                  "password": "buenas123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200Response"
+          },
+          "400": {
+            "description": "Invalid JSON formato or missing fields"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Try to close the user session",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "b81e27aa-e8f2-4de9-b879-32b52bcfc453"
+          }
+        ],
+        "security": [
+          {
+            "TokenAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful logout",
+                    "value": {
+                      "message": "Session closed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing token"
+          },
+          "404": {
+            "description": "User not found with the given token"
+          }
+        }
+      }
+    },
+    "/incidents/{id}": {
+      "get": {
+        "tags": [
+          "Incidents"
+        ],
+        "summary": "GetByID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Incidents"
+        ],
+        "summary": "DeleteIncident",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "example": "ee71e061-a140-4dfe-a069-ecdf9d1e1cc1"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "incidentEntity",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/incidents": {
+      "get": {
+        "tags": [
+          "Incidents"
+        ],
+        "summary": "FilterIncidents",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "example": "OTHERS"
+          },
+          {
+            "name": "archived",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "example": "false"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "incidentEntity",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Incidents"
+        ],
+        "summary": "UpdateIncident",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "incident": {
+                    "type": "string",
+                    "example": "{\n\t\"userToken\": \"ee71e061-a140-4dfe-a069-ecdf9d1e1cc1\",\n  \"id\": \"680f26511db1004141ef7eb6\",\n  \"state\": \"reported\",\n  \"type\": \"others\",\n  \"description\": \"ajsjajsajaj\",\n  \"date\": \"2025-12-07\",\n  \"location\": {\n    \"coordinates\": [\n      7.1883,\n      123.6222777\n    ]\n  }\n}"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "incidentEntity",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Incidents"
+        ],
+        "summary": "CreateFixedIncident",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "incident": {
+                    "type": "string",
+                    "example": "{\n  \"ownerId\": \"680f23cc470fed0ac4b6261f\",\n  \"type\": \"others\",\n  \"description\": \"Nullam molestie nibh in lectus.\\r\\n\\r\\nPellentesque at nulla. Suspendisse potenti. Cras in purus eu magnavulputate luctus.\",\n  \"location\": {\n    \"coordinates\": [\n      19.2057487,\n      106.1051705\n    ]\n   }\n}"
+                  },
+                  "images": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "incidentEntity",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

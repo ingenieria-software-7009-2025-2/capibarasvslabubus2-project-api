@@ -33,7 +33,7 @@ class IncidentController(private val incidentService: IncidentService) {
      * @throws InvalidIncidentIdException If the ID is blank.
      */
     @GetMapping("/{id}")
-    fun getIncidentsById(@PathVariable id: String): ResponseEntity<Incident> {
+    fun getIncidentById(@PathVariable id: String): ResponseEntity<Incident> {
         if (id.isBlank()) {
             throw InvalidIncidentIdException()
         }
@@ -49,7 +49,7 @@ class IncidentController(private val incidentService: IncidentService) {
      * @return The list with the incidnets that match the criteria.
      */
     @GetMapping
-    fun getFilterIncidents(
+    fun getFilterIncident(
             @RequestParam(required = false) type: List<INCIDENT_TYPE>?,
             @RequestParam(required = false) state: List<INCIDENT_STATE>?,
             @RequestParam(required = false, defaultValue = "false") archived: Boolean
@@ -69,7 +69,7 @@ class IncidentController(private val incidentService: IncidentService) {
      * @throws InvalidImagesListException If the images list is empty or contains invalid files.
      */
     @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createIncidents(
+    fun createIncident(
             @Valid @RequestPart("incident") incidentInfo: CreateIncidentRequest,
             @RequestPart("images") images: List<MultipartFile>
     ): ResponseEntity<Incident> {
@@ -85,11 +85,36 @@ class IncidentController(private val incidentService: IncidentService) {
      * @return A [ResponseEntity] containing the updated incident.
      */
     @PatchMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun patchIncidents(
+    fun patchIncident(
             @Valid @RequestPart("incident") updateRequest: PatchIncidentRequest,
             @RequestParam("images") images: List<MultipartFile>?
     ): ResponseEntity<Incident> {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(incidentService.patchIncident(updateRequest, images))
+    }
+
+    /**
+     * Delete an incident by id.
+     *
+     * @param token The token of the user trying to delet the incidnet.
+     * @param id The incidnet id.
+     * @return A [ResponseEntity] with a 204 code if the operation was successful.
+     * @throw TokenEmptyOrNull is the token is empty or null.
+     * @throw InvalidIncidentIdException if the id is blank.
+     */
+    @DeleteMapping("/{id}")
+    fun deleteIncident(
+            @RequestHeader("Authorization") token: String?,
+            @PathVariable id: String,
+    ): ResponseEntity<Any> {
+        if (token.isNullOrEmpty()) {
+            throw TokenEmptyOrNullException()
+        }
+        if (id.isBlank()) {
+            throw InvalidIncidentIdException()
+        }
+
+        incidentService.deleteIncident(token, id)
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build()
     }
 }

@@ -178,8 +178,8 @@ class UserService(
     }
 
     /**
-     * Deletes an user by the id. This operations is only valid if the given user is an admin user
-     * or if the user is trying to deleting its own account.
+     * Delete an user by id. This operations is only valid if the given user is an admin user or if
+     * the user is trying to deleting its own account.
      *
      * @param token The token of the user trying to delete.
      * @param id The id of the user to delete.

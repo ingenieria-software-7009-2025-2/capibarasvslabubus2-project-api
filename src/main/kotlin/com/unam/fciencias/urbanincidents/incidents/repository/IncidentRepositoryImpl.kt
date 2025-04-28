@@ -17,6 +17,7 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     object PropertyNames {
+        const val ID = "_id"
         const val STATES = "states"
         const val IMAGES = "images"
         const val DATE = "date"
@@ -27,7 +28,7 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
     }
 
     override fun updateStateImagesById(id: String, images: List<String>, state: INCIDENT_STATE) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
 
         val nameField = "${PropertyNames.STATES}.${state.toFieldTag()}.${PropertyNames.IMAGES}"
 
@@ -36,7 +37,7 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
     }
 
     override fun updateStateDateById(id: String, date: LocalDate, state: INCIDENT_STATE) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
 
         val nameField = "${PropertyNames.STATES}.${state.toFieldTag()}.${PropertyNames.DATE}"
 
@@ -45,25 +46,25 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
     }
 
     override fun updatedDescriptionById(id: String, description: String) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         val update = Update().set(PropertyNames.DESCRIPTION, description)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
     }
 
     override fun updateLocationById(id: String, location: GeoJsonPoint) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         val update = Update().set(PropertyNames.LOCATION, location)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
     }
 
     override fun updateTypeById(id: String, type: INCIDENT_TYPE) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         val update = Update().set(PropertyNames.TYPE, type)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
     }
 
     override fun updateArchivedStateById(id: String, archivedState: Boolean) {
-        val query = Query(Criteria.where("_id").`is`(id))
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
         val update = Update().set(PropertyNames.ARCHIVED, archivedState)
         mongoTemplate.updateFirst(query, update, Incident::class.java)
     }
@@ -100,6 +101,11 @@ class IncidentRepositoryImpl(private val mongoTemplate: MongoTemplate) : Inciden
         val query = Query(filter)
 
         return mongoTemplate.find(query, Incident::class.java)
+    }
+
+    override fun deleteIncident(id: String) {
+        val query = Query(Criteria.where(PropertyNames.ID).`is`(id))
+        mongoTemplate.remove(query, Incident::class.java)
     }
 
     private fun INCIDENT_STATE.toFieldTag(): String =

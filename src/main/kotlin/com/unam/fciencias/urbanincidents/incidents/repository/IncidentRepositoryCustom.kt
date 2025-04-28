@@ -17,4 +17,5 @@ interface IncidentRepositoryCustom {
           states: List<INCIDENT_STATE>,
           archived: Boolean
   ): List<Incident>
+  fun deleteIncident(id: String)
 }

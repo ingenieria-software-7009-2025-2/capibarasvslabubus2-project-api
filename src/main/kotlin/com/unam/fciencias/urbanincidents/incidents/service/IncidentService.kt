@@ -41,7 +41,7 @@ class IncidentService(
      * @param id The ID of the incident to check.
      * @return True if the incident exists, false otherwise.
      */
-    fun existsIncidentById(id: String): Boolean = incidentRepository.findById(id).isPresent()
+    fun existsIncidentById(id: String): Boolean = incidentRepository.existsById(id)
 
     /**
      * Returns a list with the incidents that match the values in the given list
@@ -140,6 +140,27 @@ class IncidentService(
 
         return getIncidentById(updateRequest.id)
     }
+
+    /**
+     * Delete an incident by id. This operations is only valid if the given user is an admin user or
+     * if the user is trying to deleting its own incident.
+     *
+     * @param token The token of the user trying to delete.
+     * @param id The id of the incident to delete.
+     */
+    fun deleteIncident(token: String, id: String) {
+        val user: User = userService.getUserByToken(token)
+        if (user.role != USER_ROLE.ADMIN && (user.incidents == null || !user.incidents.contains(id))
+        ) {
+            throw UnauthorizedIncidentException()
+        }
+
+        if (!existsIncidentById(id)) {
+            throw IncidentNotFoundException()
+        }
+        incidentRepository.deleteById(id)
+    }
+
     /**
      * Validates an incident update request before applying any changes.
      *

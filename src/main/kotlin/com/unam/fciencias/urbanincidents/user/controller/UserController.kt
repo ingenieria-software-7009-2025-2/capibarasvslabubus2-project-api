@@ -127,12 +127,12 @@ class UserController(private val userService: UserService) {
     }
 
     /**
-     * Deletes and user by their id.
+     * Delete and user by id.
      *
      * @param id The id of the user to eliminate
      * @return A 204 responde if the operation was successful.
      * @throws TokenEmptyOrNullException if the token is missing or empty.
-     * @throws InvalidUserIdException if the if of the user is blanck
+     * @throws InvalidUserIdException if the if of the user is blank
      */
     @DeleteMapping("/{id}")
     fun deleteUser(

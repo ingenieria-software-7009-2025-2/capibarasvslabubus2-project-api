@@ -27,7 +27,7 @@
       }
     },
     "responses": {
-      "200Response": {
+      "200UserResponse": {
         "description": "Successful response",
         "content": {
           "application/json": {
@@ -53,7 +53,47 @@
           }
         }
       },
-      "409Response": {
+      "200IncidentResponse": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Incident"
+            },
+            "examples": {
+              "success": {
+                "summary": "Successful Incident Response",
+                "value": {
+                  "id": "680f26501db1004141ef7eb4",
+                  "ownerId": "680f24e11db1004141ef7e8b",
+                  "type": "architecture",
+                  "states": {
+                    "reported": {
+                      "date": "2025-04-28",
+                      "images": [
+                        "encodedImage1",
+                        "encodedImage2"
+                      ]
+                    },
+                    "inProgress": null,
+                    "solved": null
+                  },
+                  "description": "Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non mauris.",
+                  "location": {
+                    "type": "Point",
+                    "coordinates": [
+                      39.2817753,
+                      11.2838237
+                    ]
+                  },
+                  "archived": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "409UserResponse": {
         "description": "Conflict",
         "content": {
           "application/json": {
@@ -200,6 +240,223 @@
             "maxLength": 20
           }
         }
+      },
+      "Incident": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "AUTOMOTIVE",
+              "ROAD_INFRASTRUCTURE",
+              "NATURAL_PHENOMENA",
+              "ARCHITECTURE",
+              "OTHERS"
+            ]
+          },
+          "states": {
+            "type": "object",
+            "properties": {
+              "reported": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "inProgress": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "solved": {
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "reported"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "location": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "example": "Point"
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "example": [
+                  -99.1332,
+                  19.4326
+                ]
+              }
+            }
+          },
+          "archived": {
+            "type": "boolean"
+          }
+        },
+        "SpecificState": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "images": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "CreateIncidentRequest": {
+          "type": "object",
+          "properties": {
+            "ownerId": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "AUTOMOTIVE",
+                "ROAD_INFRASTRUCTURE",
+                "NATURAL_PHENOMENA",
+                "ARCHITECTURE",
+                "OTHERS"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 200
+            },
+            "location": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "Point"
+                },
+                "coordinates": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "example": [
+                    -99.1332,
+                    19.4326
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "PatchIncidentRequest": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "userToken": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "REPORTED",
+                "IN_PROGRESS",
+                "SOLVED"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "AUTOMOTIVE",
+                "ROAD_INFRASTRUCTURE",
+                "NATURAL_PHENOMENA",
+                "ARCHITECTURE",
+                "OTHERS"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 200
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "location": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "Point"
+                },
+                "coordinates": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "example": [
+                    -99.1332,
+                    19.4326
+                  ]
+                }
+              }
+            },
+            "archived": {
+              "type": "boolean"
+            }
+          }
+        }
       }
     }
   },
@@ -285,8 +542,9 @@
           }
         },
         "responses": {
-          "200": {
-            "$ref": "#/components/responses/200Response"
+          "201": {
+            "description": "User created",
+            "$ref": "#/components/responses/200UserResponse"
           },
           "400": {
             "description": "Invalid Email, Invalid Password, Invalid JSON format, etc."
@@ -315,7 +573,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200Response"
+            "$ref": "#/components/responses/200UserResponse"
           },
           "404": {
             "description": "User not found"
@@ -354,11 +612,11 @@
           "204": {
             "description": "No content"
           },
-          "400": {
-            "description": "User not found"
-          },
           "401": {
             "description": "Not authorized"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }
@@ -386,7 +644,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200Response"
+            "$ref": "#/components/responses/200UserResponse"
           },
           "400": {
             "description": "Missing token"
@@ -432,7 +690,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200Response"
+            "$ref": "#/components/responses/200UserResponse"
           },
           "400": {
             "description": "Invalid Email, Invalid Password, Invalid Token, Invalid JSON format, etc."
@@ -521,7 +779,7 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/200Response"
+            "$ref": "#/components/responses/200UserResponse"
           },
           "400": {
             "description": "Invalid JSON formato or missing fields"
@@ -604,10 +862,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "$ref": "#/components/responses/200IncidentResponse"
+          },
+          "404": {
+            "description": "Incident not found"
           }
         }
       },
@@ -626,28 +884,22 @@
             "example": "ee71e061-a140-4dfe-a069-ecdf9d1e1cc1"
           },
           {
-            "name": "version",
+            "name": "id",
             "in": "path",
             "schema": {
               "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "incidentEntity",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+          "204": {
+            "description": "No content"
+          },
+          "401": {
+            "description": "Not authorized"
+          },
+          "404": {
+            "description": "Incident not found, User no found with the token, etc."
           }
         }
       }
@@ -663,41 +915,118 @@
             "name": "type",
             "in": "query",
             "schema": {
-              "type": "string"
-            },
-            "example": "OTHERS"
+              "type": "string",
+              "enum": [
+                "AUTOMOTIVE",
+                "ROAD_INFRASTRUCTURE",
+                "NATURAL_PHENOMENA",
+                "ARCHITECTURE",
+                "OTHERS"
+              ]
+            }
           },
           {
             "name": "archived",
             "in": "query",
             "schema": {
-              "type": "boolean"
-            },
-            "example": "false"
+              "type": "boolean",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "false"
+            }
           },
           {
-            "name": "version",
+            "name": "state",
             "in": "path",
             "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "incidentEntity",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+              "type": "string",
+              "enum": [
+                "REPORTED",
+                "IN_PROGRESS",
+                "SOLVED"
+              ]
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Successful response",
+            "description": "Successful request",
             "content": {
-              "application/json": {}
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Incident"
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Successful response",
+                    "value": [
+                      {
+                        "id": "680f26501db1004141ef7eb4",
+                        "ownerId": "680f24e11db1004141ef7e8b",
+                        "type": "architecture",
+                        "states": {
+                          "reported": {
+                            "date": "2025-04-28",
+                            "images": [
+                              "encodedImage1",
+                              "encodedImage2"
+                            ]
+                          },
+                          "inProgress": null,
+                          "solved": null
+                        },
+                        "description": "Nullam porttitor lacus at turpis. Donec posuere metus vitae ipsum. Aliquam non mauris.",
+                        "location": {
+                          "type": "Point",
+                          "coordinates": [
+                            39.2817753,
+                            66.9394884
+                          ]
+                        },
+                        "archived": false
+                      },
+                      {
+                        "id": "680f26501db1004141ef7eb5",
+                        "ownerId": "680f24e11db1004141ef7e8c",
+                        "type": "road",
+                        "states": {
+                          "reported": {
+                            "date": "2025-04-20",
+                            "images": [
+                              "encodedImage3"
+                            ]
+                          },
+                          "inProgress": {
+                            "date": "2025-04-22",
+                            "images": [
+                              "encodedImage4"
+                            ]
+                          },
+                          "solved": null
+                        },
+                        "description": "Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
+                        "location": {
+                          "type": "Point",
+                          "coordinates": [
+                            -99.1332,
+                            19.4326
+                          ]
+                        },
+                        "archived": false
+                      }
+                    ]
+                  }
+                }
+              }
             }
+          },
+          "400": {
+            "description": "Bad request (invalid query)"
           }
         }
       },
@@ -718,37 +1047,25 @@
                   },
                   "incident": {
                     "type": "string",
-                    "example": "{\n\t\"userToken\": \"ee71e061-a140-4dfe-a069-ecdf9d1e1cc1\",\n  \"id\": \"680f26511db1004141ef7eb6\",\n  \"state\": \"reported\",\n  \"type\": \"others\",\n  \"description\": \"ajsjajsajaj\",\n  \"date\": \"2025-12-07\",\n  \"location\": {\n    \"coordinates\": [\n      7.1883,\n      123.6222777\n    ]\n  }\n}"
+                    "example": "{\n\t\"userToken\": \"ee71e061-a140-4dfe-a069-ecdf9d1e1cc1\",\n  \"id\": \"680f26511db1004141ef7eb6\",\n  \"state\": \"REPORTED\",\n  \"type\": \"others\",\n  \"description\": \"description...\",\n  \"date\": \"2025-12-07\",\n  \"location\": {\n    \"coordinates\": [\n      7.1883,\n      123.6222777\n    ]\n  }\n}"
                   }
                 }
               }
             }
           }
         },
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "incidentEntity",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "$ref": "#/components/responses/200IncidentResponse"
+          },
+          "400": {
+            "description": "Invalid JSON format, Missing fields, Not evidence provided, etc."
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "Inconsisten data"
           }
         }
       },
@@ -756,7 +1073,7 @@
         "tags": [
           "Incidents"
         ],
-        "summary": "CreateFixedIncident",
+        "summary": "Create incident",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -776,30 +1093,15 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          },
-          {
-            "name": "incidentEntity",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {}
-            }
+            "$ref": "#/components/responses/200IncidentResponse"
+          },
+          "400": {
+            "description": "Invalid JSON formato, Missing fields, etc..."
+          },
+          "404": {
+            "description": "User not found (owner)"
           }
         }
       }

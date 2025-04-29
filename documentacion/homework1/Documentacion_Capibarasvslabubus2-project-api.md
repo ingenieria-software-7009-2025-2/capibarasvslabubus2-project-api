@@ -19,19 +19,71 @@ Integrantes:
     <th style="border: 1px solid black; padding: 8px;">Descripción</th>
     <th style="border: 1px solid black; padding: 8px;">Autor</th>
   </tr>
+
   <tr>
-    <td style="border: 1px solid black; padding: 8px;">1.0.0</td>
+    <td style="border: 1px solid black; padding: 8px;">1.2.0 frontend</td>
+    <td style="border: 1px solid black; padding: 8px;">28 de abril</td>
+    <td style="border: 1px solid black; padding: 8px;">Esta iteración se centra en implementar los primeros cuatro casos de uso de un incidente.<br><br>
+    Comentario: El porcentaje realizado antes del corte debido al paro es de aproximadamente un 45%, esto debido al avance en todos los casos tanto del lado del frontend como del backend, aunque hace falta terminar de pulir el manejo de envío de información entre componentes en el frontend para una buena visualización.<br><br>
+    Componentes implementados:<br>
+    - Mapa de Google Maps (componente Mapa)<br>
+    - CreateIncidents (CU1): Subcomponentes: DescriptionBox, IncidentFilter, ImageUploader<br>
+    - VisualizeIncident (CU4)<br>
+    - UpdateIncident (CU2): Subcomponente: ImageUploader<br>
+    - Navbar (CU3) para filtrado de incidentes
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">
+    Sandra Rivera
+Leonardo Ortiz
+Andrea Figueroa 
+</td>
+  </tr>
+
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">1.2.0 backend</td>
+    <td style="border: 1px solid black; padding: 8px;">28 de abril</td>
+    <td style="border: 1px solid black; padding: 8px;">
+    Añadido de propiedades en el modelo del usuario: lista de incidencias y rol.<br>
+    Creación del modelo de un incidente urbano.<br>
+    Creación de endpoints PATCH, DELETE para la API de usuarios.<br>
+    Creación de endpoints GET, POST, PATCH, DELETE para la API de incidentes.<br>
+    Creación de excepciones personalizadas:<br>
+    - Para usuarios: Token inválido, email inválido, usuario no encontrado.<br>
+    - Para incidentes: Patch inválido, falta de evidencia, no ser usuario ADMIN, entre otras.<br>
+    Documentación con Swagger para ambas APIs e implementación de ejemplos de respuesta.<br>
+    Validación de datos recibidos usando Hibernate.
+    </td>
+    <td style="border: 1px solid black; padding: 8px;">Gael Chaparro
+Antonio Barrientos
+</td>
+  </tr>
+
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">1.0.0 frontend</td>
     <td style="border: 1px solid black; padding: 8px;">25 de marzo</td>
     <td style="border: 1px solid black; padding: 8px;">Esta iteración se centró en implementar los casos de uso básicos de usuario, cubriendo el ciclo completo de autenticación y gestión de datos personales para garantizar una experiencia fluida.<br><br>
-    Casos de usos implementados: <br> 
+    Casos de usos implementados:<br>
     - CU9: Registro de Usuario (Sign Up)<br>
-    - CU10: Obtener Información de Usuario <br>
+    - CU10: Obtener Información de Usuario<br>
     - CU11: Inicio de Sesión (Login)<br>
-    - CU12: Cierre de Sesión (Logout) <br>
+    - CU12: Cierre de Sesión (Logout)<br>
     </td>
     <td style="border: 1px solid black; padding: 8px;">Todos los miembros de Capibaras vs Labubu 2</td>
   </tr>
+
+  <tr>
+    <td style="border: 1px solid black; padding: 8px;">1.0.0 backend</td>
+    <td style="border: 1px solid black; padding: 8px;">25 de marzo</td>
+    <td style="border: 1px solid black; padding: 8px;">Esta iteración se centró en implementar la base de la API para autenticación y manejo de usuarios, incluyendo creación, obtención, inicio y cierre de sesión de usuarios.</td>
+    <td style="border: 1px solid black; padding: 8px;">Todos los miembros de Capibaras vs Labubu 2</td>
+  </tr>
 </table>
+
+
+
+
+
+
 
 
 ## 1. Introducción
@@ -162,109 +214,108 @@ El sistema permitirá a los usuarios reportar incidentes urbanos, marcando su ub
 **Actores:** Usuario, Administrador  
 **Flujo Principal:**
 
-1. El usuario accede a la sección de visualización de incidentes.
+1. El usuario accede a la página.
 2. El sistema despliega un mapa interactivo con todos los incidentes registrados.
 3. El usuario aplica filtros (por tipo de incidente y estado).
 4. El sistema actualiza la vista con los incidentes que cumplen los criterios de búsqueda.
 
-### **CU4: Reporte de Incidente Falso o Duplicado**
+### **CU4: Visualización de Incidentes**
 
-**Actores:** Usuario, Administrador
+**Actores:** Usuario, Administrador  
 **Flujo Principal:**
 
-1. El usuario inicia sesión y accede a un incidente.
-2. El sistema despliega el mapa interactivo.
-3. El usuario selecciona un registro de incidente.
-4. Selecciona la opción "Reportar incidente falso o duplicado".
-5. Proporciona una justificación o enlace a un incidente similar.
-6. El sistema notifica a un administrador para su revisión.
-7. Si el administrador confirma que el incidente es falso o duplicado, lo marca como tal y lo elimina o fusiona con otro reporte. (CU6)
+1. El usuario accede a la página.  
+2. El sistema despliega un mapa interactivo con todos los incidentes registrados.  
+3. El usuario selecciona sobre el mapa un ya incidente reportado.  
+4. El sistema despliega una ventana con todos los datos pertinentes del incidente:  
+   - Estado  
+   - Fecha  
+   - Usuario que lo registró  
+   - Tipo de incidente  
+   - Descripción  
+   - Pruebas (Fotos)  
+5. Una vez revisado el incidente, el usuario tendrá la opción de cerrar la ventana y seguir navegando en el mapa.
+
+
+
+### **CU5: Reporte de Incidente Falso o Inadecuado**
+
+**Actores:** Usuario, Administrador  
+**Flujo Principal:**
+
+1. El usuario inicia sesión y accede a un incidente.  
+2. El sistema despliega el mapa interactivo.  
+3. El usuario selecciona un registro de incidente.  
+4. Selecciona la opción "Reportar incidente falso, inadecuado".  
+5. El usuario proporciona una justificación del reporte y envía el reporte.  
+6. El sistema guarda el incidente para su revisión. Y enviará una notificación de “Reporte registrado”.
 
 **Flujo Alternativo:**
 
-- Si el incidente no se considera falso o duplicado, el administrador lo deja activo y notifica al usuario que reportó.
+- El usuario le da cancelar/ cerrar pestaña, y no se registra el reporte.
 
-### **CU5: Archivar Incidente Resuelto**
+
+### **CU6: Archivar Incidente Resuelto**
 
 **Actores:** Administrador  
-**Flujo Principal:**  
+**Flujo Principal:**
 
 1. El administrador inicia sesión en la aplicación.  
-2. Accede a la lista de incidentes marcados como **"Resuelto"**.  
+2. Accede a la lista de incidentes marcados como "Resuelto".  
 3. Selecciona un incidente y verifica que cumple con los criterios de resolución.  
-4. Elige la opción **"Archivar Incidente"**.  
-5. El sistema cambia el estado del incidente a **"Archivado"** y lo oculta del mapa interactivo.  
+4. Elige la opción "Archivar Incidente".  
+5. El sistema cambia el estado del incidente a "Archivado" y lo oculta del mapa interactivo.
 
-**Flujo Alternativo:**  
+**Flujo Alternativo:**
 
-- Si el incidente no está completamente resuelto, el administrador puede revertir el estado a **"En proceso"** y notificar al usuario correspondiente.
+- Si el incidente no está completamente resuelto, el administrador puede revertir el estado a "En proceso".
 
-### **CU6: Eliminar Incidente Falso o Duplicado**
+
+
+
+### **CU7: Eliminar Incidente Falso o Inadecuado**
 
 **Actores:** Administrador  
-**Flujo Principal:**  
+**Flujo Principal:**
 
-1. El administrador inicia sesión y revisa los incidentes reportados como **"Falso o Duplicado"**.  
+1. El administrador inicia sesión y revisa los incidentes reportados como "Falso o inadecuado”.  
 2. Selecciona un incidente y evalúa la justificación proporcionada.  
-3. Si confirma que es inválido, elige la opción **"Eliminar Incidente"**.  
+3. Si confirma que es inválido:  
+   a) Tiene la opción de: *dar de baja al usuario*. El botón añadirá al usuario en una lista para eliminarlo después.  
+   b) Elige la opción "Eliminar Incidente".  
 4. El sistema solicita confirmación y, tras aceptar, elimina permanentemente el registro.  
-5. Se notificará al usuario que ingresó el incidente y al usuario que lo reportó como **Falso o Duplicado**, indicando que el incidente fue borrado.  
 
-**Flujo Alternativo:**  
+**Flujo Alternativo:**
 
-- Si el incidente es válido, el administrador puede marcarlo como **"Confirmado"** y notificar al usuario que lo reportó como falso.
+- Si el incidente es válido, el administrador puede marcarlo como "Confirmado".
 
-### **CU7: Reportar Usuario por Contenido Inadecuado**
 
-**Actores:** Usuario, Administrador  
-**Flujo Principal:**  
 
-1. El usuario inicia sesión en la aplicación.  
-2. Accede al mapa interactivo y selecciona un incidente reportado por otro usuario.  
-3. Si identifica contenido inadecuado, selecciona la opción **"Reportar Usuario"**.  
-4. El sistema despliega un formulario con:  
-   - Menú desplegable para seleccionar motivo (**"Contenido indebido"**, **"Spam"**).  
-   - Campo de comentario (máx. 200 caracteres). El usuario debe llenar obligatoriamente este campo (al menos un carácter).  
-5. El usuario envía el reporte.  
-6. El sistema:  
-   - Registra el reporte.  
-   - Envía una notificación automática al administrador para su revisión.  
-   - Muestra una notificación: **"Reporte enviado. Gracias por colaborar"**.  
-
-**Flujo Alternativo:**  
-
-- Si cancela el reporte, el sistema regresa a la vista del incidente sin guardar cambios.
 
 ### **CU8: Gestionar Usuarios Reportados**
 
 **Actores:** Administrador  
-**Flujo Principal:**  
+**Flujo principal:**
 
-1. El administrador inicia sesión y accede a la sección **"Usuarios Reportados"**.  
+1. El administrador inicia sesión y accede a la sección "Usuarios Reportados".  
 2. El sistema muestra una lista de usuarios con reportes pendientes, incluyendo:  
-   - Nombre del usuario reportado.  
-   - Motivo del reporte.  
-   - Incidente asociado (con enlace para revisarlo).  
-3. El administrador selecciona un usuario y evalúa el contenido:  
-   - **Si es contenido indebido** (por ejemplo, ofensivo o ilegal):  
-     - Selecciona **"Dar de baja usuario"**.  
-     - El sistema bloquea al usuario (cuando el usuario inicie sesión verá el motivo por el bloqueo, según CU11-FA3).  
-     - Se notificará al usuario que reportó al segundo usuario indicando que el segundo usuario fue dado de baja.  
-     - El sistema guía al administrador para dar de baja la publicación del incidente asociado (CU6).  
-   - **Si es otro tipo de contenido** (por ejemplo, error honesto):  
-     - El sistema registra el incidente en la lista de incidentes reportados y redirige al administrador para **"Eliminar publicación"**, siguiendo CU6.  
-     - Se notificará tanto al usuario reportado como al que hizo el reporte indicando que el incidente fue borrado.  
+   - Nombre del usuario reportado.
 
-**Flujo Alternativo:**  
+3. El administrador selecciona un usuario y escogerá si eliminar o no al usuario.
 
-- Si el administrador considera que el reporte es infundado, puede marcarlo como **"Rechazado"** y archivar el caso.
+**Flujo Alternativo:**
+
+- El administrador cierra la ventana de usuarios reportados y la lista no se muta.
+
+
+
 
 ### **CU9: Registro de Usuario**
 
 **Actores:** Usuario (no registrado)  
-**Flujo Principal:**  
+**Flujo Principal:**
 
-1. El usuario ingresa a la aplicación y selecciona **"Registrarse"**.  
+1. El usuario ingresa a la aplicación y selecciona "Registrarse".  
 2. El sistema muestra un formulario con campos:  
    - Correo electrónico.  
    - Contraseña.  
@@ -272,15 +323,21 @@ El sistema permitirá a los usuarios reportar incidentes urbanos, marcando su ub
 4. El sistema valida que:  
    - El correo no esté registrado previamente.  
 5. Si todo es correcto, el sistema:  
-   - Crea un nuevo usuario en la base de datos.  
-   - Muestra mensaje: **"Registro exitoso. ¡Bienvenido/a!"**.  
+   a) Crea un nuevo usuario en la base de datos.  
+   b) Muestra mensaje: "Registro exitoso. ¡Bienvenido/a!".
 
-**Flujos Alternativos:**  
+**Flujos Alternativos:**
 
-- **FA1: Correo ya registrado:**  
-  Si el sistema detecta que el correo existe, muestra un mensaje de error.  
+- **FA1: Correo ya registrado**  
+  a) Si el sistema detecta que el correo existe, manda un mensaje de error.  
+  b) El usuario puede elegir rellenar ambos campos (contraseña y correo electrónico).
+
 - **FA2: Error de conexión:**  
-  Si hay fallos de red, muestra: **"Error de conexión. Intenta nuevamente"**.
+  Si hay fallos de red, el sistema muestra: "Error de conexión. Intenta nuevamente".
+
+
+
+
 
 ### **CU10: Obtener Información de Usuario**
 
@@ -410,64 +467,65 @@ El usuario debe tener una sesión activa con un token válido.
 
 ### **5.1 Casos de Uso Usuario**
 
+
 **User Functionalities:**
 
-![UserFunctionalities](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/UseCase_UserFunctionalities.png)
+![UserFunctionalities](../Diagrams/UseCasesUser/UseCase_UserFunctionalities.png)
 
 **Create User:**
 
-![CreaterUserRequest](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_CreaterUserRequest.png)
+![CreateUserRequest](../Diagrams/UseCasesUser/SequenceDiagram_CreateUser.png)
 
 **Get User:**
 
-![GetUser](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_GetUser.png)
+![GetUser](../Diagrams/UseCasesUser/SequenceDiagram_GetUser.png)
 
 **Login User:**
 
-![LoginUser](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_LoginUser.png)
+![LoginUser](../Diagrams/UseCasesUser/SequenceDiagram_LoginUser.png)
 
 **Logout User:**
 
-![LogoutUser](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_LogoutUser.png)
+![LogoutUser](../Diagrams/UseCasesUser/SequenceDiagram_LogoutUser.png)
 
 **Update User:**
 
-![UpdateUser](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/SequenceDiagram_UpdateUser.png)
+![UpdateUser](../Diagrams/UseCasesUser/SequenceDiagram_UpdateUser.png)
 
-**Report Accident Funcionalities:**
+**Report Accident Functionalities:**
 
-![ReportAccident](/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUser/UseCase_ReportAccident.png)
+![ReportAccident](../Diagrams/UseCasesUser/UseCase_ReportAccident.png)
 
 ### **5.2 Casos de Uso Plataforma de Incidentes Urbanos**
 
 **Archive Solved Incident:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ArchiveSolvedIncident.png" alt="ArchiveSolvedIncident" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ArchiveSolvedIncident.png" alt="ArchiveSolvedIncident" width="620px">
 
 **Incident Visualization And Filtering:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDIagram_IncidentVisualizationAndFiltering.png" alt="IncidentVisualizationAndFiltering" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDIagram_IncidentVisualizationAndFiltering.png" alt="IncidentVisualizationAndFiltering" width="620px">
 
 **Manage Reported Users:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ManageReportedUsers.png" alt="ManageReportedUsers" width="500px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ManageReportedUsers.png" alt="ManageReportedUsers" width="500px">
 
 **Register An Incident:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_RegisterAnIncident.png" alt="RegisterAnIncident" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_RegisterAnIncident.png" alt="RegisterAnIncident" width="620px">
 
 **Remove Duplicate Incident:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_RemoveDuplicateIncident.png" alt="RemoveDuplicateIncident" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_RemoveDuplicateIncident.png" alt="RemoveDuplicateIncident" width="620px">
 
 **Report Fake Incident:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ReportFakeIncident.png" alt="ReportFakeIncident" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ReportFakeIncident.png" alt="ReportFakeIncident" width="620px">
 
 **Report User:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ReportUser.png" alt="ReportUser" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_ReportUser.png" alt="ReportUser" width="620px">
 
 **Update Incident State:**
 
-<img src="/home/leonardoortiz/Documents/capibarasvslabubus2-project-api/documentacion/Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_PatchIncidentRequestState.png" alt="PatchIncidentRequestState" width="620px">
+<img src="../Diagrams/UseCasesUrbanIncidents/SecuenceDiagram_UpdateIncidentState.png" alt="UpdateIncidentState" width="620px">

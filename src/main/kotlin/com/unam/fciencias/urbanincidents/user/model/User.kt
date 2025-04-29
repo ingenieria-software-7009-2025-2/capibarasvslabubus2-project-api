@@ -80,15 +80,12 @@ data class LoginRequest(
 //         val password: String? = null
 // )
 
-
 data class PatchUserRequest(
-  @field:Email(message = ValidationMessages.EMAIL_INVALID)
-  val email: String? = null,
-
-  @field:Size(
-    min = MIN_LENGTH_PASSWORD,
-    max = MAX_LENGTH_PASSWORD,
-    message = ValidationMessages.PASSWORD_SIZE
-  )
-  val password: String? = null
+        @field:Email(message = ValidationMessages.EMAIL_INVALID) val email: String? = null,
+        @field:Size(
+                min = MIN_LENGTH_PASSWORD,
+                max = MAX_LENGTH_PASSWORD,
+                message = ValidationMessages.PASSWORD_SIZE
+        )
+        val password: String? = null
 )

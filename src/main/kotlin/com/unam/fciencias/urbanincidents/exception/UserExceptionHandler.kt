@@ -14,6 +14,7 @@ class UserExceptionHandler {
             UserNotFoundException::class,
             InvalidUserIdException::class,
             UnauthorizedUserException::class,
+            InvalidUserUpdateException::class,
     )
     fun handleUserExceptions(ex: UrbanIncidentsException): ResponseEntity<ErrorResponse> {
         val errorResponse =

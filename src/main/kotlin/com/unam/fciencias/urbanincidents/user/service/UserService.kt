@@ -174,6 +174,14 @@ class UserService(
 
         val userId = user.id ?: throw UrbanIncidentsException("User ID should not be null")
 
+        if (updateRequest.email != null && updateRequest.email.isEmpty()) {
+            throw InvalidUserUpdateException("The email can't be empty")
+        }
+
+        if (updateRequest.password != null && updateRequest.password.isEmpty()) {
+            throw InvalidUserUpdateException("The password can't be empty")
+        }
+
         isValidUpdate(userId, updateRequest.email)
         updateRequest.email?.let { userRepository.updateEmailById(userId, it) }
         updateRequest.password?.let { userRepository.updatePasswordById(userId, it) }

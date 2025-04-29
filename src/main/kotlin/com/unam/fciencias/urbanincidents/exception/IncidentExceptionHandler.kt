@@ -13,12 +13,14 @@ class IncidentExceptionHandler {
             InvalidIncidentDateException::class,
             InvalidIncidentStateException::class,
             InvalidIncidentUpdateException::class,
+            UnauthorizedIncidentException::class,
     )
     fun handleIncidentExceptions(ex: UrbanIncidentsException): ResponseEntity<ErrorResponse> {
         val errorResponse =
                 ErrorResponse(
                         error = ex.message ?: "Unknown error",
-                        exceptionType = ex.javaClass.simpleName
+                        exceptionType = ex.javaClass.simpleName,
+                        status = ex.errorCode.value(),
                 )
         return ResponseEntity.status(ex.errorCode).body(errorResponse)
     }

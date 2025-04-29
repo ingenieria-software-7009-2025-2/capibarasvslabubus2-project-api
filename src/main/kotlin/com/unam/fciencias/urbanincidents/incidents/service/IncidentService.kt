@@ -10,6 +10,7 @@ import java.time.LocalDate
 import java.util.Base64
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -240,7 +241,8 @@ class IncidentService(
     private fun isNewArchivedStateValid(modifyArchivedValue: Boolean, userRole: USER_ROLE) {
         if (modifyArchivedValue && userRole != USER_ROLE.ADMIN) {
             throw InvalidIncidentUpdateException(
-                    "You can't modify the archived value of a publication if you are not an admin user"
+                    "You can't modify the archived value of a publication if you are not an admin user",
+                    HttpStatus.UNAUTHORIZED
             )
         }
     }

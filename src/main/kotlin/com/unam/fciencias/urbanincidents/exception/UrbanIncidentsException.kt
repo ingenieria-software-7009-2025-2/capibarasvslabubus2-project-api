@@ -8,6 +8,7 @@ open class UrbanIncidentsException(
 ) : RuntimeException(message)
 
 data class ErrorResponse(
+        val status: Int,
         val error: String,
         val exceptionType: String,
 )

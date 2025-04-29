@@ -12,14 +12,15 @@ const val MIN_LENGTH_NAME = 1
 const val MAX_LENGTH_NAME = 30
 
 object ValidationMessages {
-        const val USER_ROLE_EMPTY = "Role can't be empty"
-        const val PASSWORD_EMPTY = "Password can't be empty"
-        const val TOKEN_EMPTY = "Token can't be empty"
+    const val USER_ROLE_EMPTY = "Role can't be empty"
+    const val PASSWORD_EMPTY = "Password can't be empty"
+    const val TOKEN_EMPTY = "Token can't be empty"
+    const val EMAIL_EMPTY = "Email cant't be empty"
 
-        const val EMAIL_INVALID = "Invalid email"
+    const val EMAIL_INVALID = "Invalid email"
 
-        const val PASSWORD_SIZE =
-                "Password must be at least $MIN_LENGTH_PASSWORD characters and at most $MAX_LENGTH_PASSWORD characters"
+    const val PASSWORD_SIZE =
+            "Password must be at least $MIN_LENGTH_PASSWORD characters and at most $MAX_LENGTH_PASSWORD characters"
 }
 
 data class Token(
@@ -27,6 +28,8 @@ data class Token(
 )
 
 data class UserId(val id: String)
+
+data class LogoutMessage(val message: String)
 
 @Document("users")
 data class User(
@@ -39,7 +42,9 @@ data class User(
 )
 
 data class CreaterUserRequest(
-        @field:Email(message = ValidationMessages.EMAIL_INVALID) val email: String,
+        @field:NotBlank(message = ValidationMessages.EMAIL_EMPTY)
+        @field:Email(message = ValidationMessages.EMAIL_INVALID)
+        val email: String,
         @field:NotBlank(message = ValidationMessages.PASSWORD_EMPTY)
         @field:Size(
                 min = MIN_LENGTH_PASSWORD,
@@ -50,7 +55,9 @@ data class CreaterUserRequest(
 )
 
 data class LoginRequest(
-        @field:Email(message = ValidationMessages.EMAIL_INVALID) val email: String,
+        @field:NotBlank(message = ValidationMessages.EMAIL_EMPTY)
+        @field:Email(message = ValidationMessages.EMAIL_INVALID)
+        val email: String,
         @field:NotBlank(message = ValidationMessages.PASSWORD_EMPTY)
         @field:Size(
                 min = MIN_LENGTH_PASSWORD,
@@ -61,7 +68,9 @@ data class LoginRequest(
 )
 
 data class PatchUserRequest(
-        @field:Email(message = ValidationMessages.EMAIL_INVALID) val email: String?,
+        @field:NotBlank(message = ValidationMessages.EMAIL_EMPTY)
+        @field:Email(message = ValidationMessages.EMAIL_INVALID)
+        val email: String?,
         @field:NotBlank(message = ValidationMessages.PASSWORD_EMPTY)
         @field:Size(
                 min = MIN_LENGTH_PASSWORD,

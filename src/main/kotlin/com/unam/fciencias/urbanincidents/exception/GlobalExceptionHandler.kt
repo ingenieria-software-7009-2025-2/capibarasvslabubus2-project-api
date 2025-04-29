@@ -10,27 +10,40 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 @ControllerAdvice
 class GlobalExceptionHandler {
 
-    // Validaciones que fallan (por ejemplo, @NotBlank, @Email, etc.)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(
             ex: MethodArgumentNotValidException
-    ): ResponseEntity<Map<String, String?>> {
-        val errors = mutableMapOf<String, String?>()
-        ex.bindingResult.fieldErrors.forEach { errors[it.field] = it.defaultMessage }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors)
+    ): ResponseEntity<ErrorResponse> {
+        val firstErrorMessage =
+                ex.bindingResult.fieldErrors.firstOrNull()?.defaultMessage
+                        ?: "Error de validación en la solicitud."
+
+        val errorResponse =
+                ErrorResponse(
+                        status = HttpStatus.BAD_REQUEST.value(),
+                        error = firstErrorMessage,
+                        exceptionType = ex::class.simpleName ?: "MethodArgumentNotValidException"
+                )
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleJsonParseErrors(
-            ex: HttpMessageNotReadableException
-    ): ResponseEntity<Map<String, String>> {
+    fun handleJsonParseErrors(ex: HttpMessageNotReadableException): ResponseEntity<ErrorResponse> {
         val errorMessage =
                 if (ex.message?.contains("JSON parse error") == true) {
                     "El formato del JSON es inválido o faltan campos obligatorios."
                 } else {
                     "Se produjo un error al procesar el JSON."
                 }
-        val errorResponse = mapOf("error" to errorMessage, "message" to ex.message.orEmpty())
+
+        val errorResponse =
+                ErrorResponse(
+                        status = HttpStatus.BAD_REQUEST.value(),
+                        error = errorMessage,
+                        exceptionType = ex::class.simpleName ?: "HttpMessageNotReadableException"
+                )
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 }

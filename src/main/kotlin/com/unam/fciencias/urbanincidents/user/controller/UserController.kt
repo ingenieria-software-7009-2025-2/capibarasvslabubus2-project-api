@@ -114,10 +114,10 @@ class UserController(private val userService: UserService) {
      * @throws TokenEmptyOrNullException if the token is missing or empty.
      */
     @PostMapping("/logout")
-    fun logoutUser(@RequestHeader("Authorization") token: String?): ResponseEntity<String?> {
+    fun logoutUser(@RequestHeader("Authorization") token: String?): ResponseEntity<LogoutMessage> {
         val validatedToken = validToken(token)
         userService.logoutUser(validatedToken)
-        return ResponseEntity.status(HttpStatus.OK).body("Session closed")
+        return ResponseEntity.status(HttpStatus.OK).body(LogoutMessage(message = "Session closed"))
     }
 
     /**

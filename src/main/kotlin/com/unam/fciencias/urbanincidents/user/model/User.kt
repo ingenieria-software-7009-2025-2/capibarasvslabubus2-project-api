@@ -1,6 +1,7 @@
 package com.unam.fciencias.urbanincidents.user.model
 
 import com.unam.fciencias.urbanincidents.enums.*
+import com.unam.fciencias.urbanincidents.validator.*
 import jakarta.validation.constraints.*
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -67,25 +68,15 @@ data class LoginRequest(
         val password: String
 )
 
-// data class PatchUserRequest(
-//         @field:NotBlank(message = ValidationMessages.EMAIL_EMPTY)
-//         @field:Email(message = ValidationMessages.EMAIL_INVALID)
-//         val email: String?,
-//         @field:NotBlank(message = ValidationMessages.PASSWORD_EMPTY)
-//         @field:Size(
-//                 min = MIN_LENGTH_PASSWORD,
-//                 max = MAX_LENGTH_PASSWORD,
-//                 message = ValidationMessages.PASSWORD_SIZE
-//         )
-//         val password: String? = null
-// )
-
 data class PatchUserRequest(
-        @field:Email(message = ValidationMessages.EMAIL_INVALID) val email: String? = null,
+        @field:NullableNotBlank(message = ValidationMessages.EMAIL_EMPTY)
+        @field:Email(message = ValidationMessages.EMAIL_INVALID)
+        val email: String? = null,
         @field:Size(
                 min = MIN_LENGTH_PASSWORD,
                 max = MAX_LENGTH_PASSWORD,
                 message = ValidationMessages.PASSWORD_SIZE
         )
+        @field:NullableNotBlank(message = ValidationMessages.PASSWORD_EMPTY)
         val password: String? = null
 )

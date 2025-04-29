@@ -8,7 +8,9 @@ import com.unam.fciencias.urbanincidents.user.model.*
 import com.unam.fciencias.urbanincidents.user.service.UserService
 import java.time.LocalDate
 import java.util.Base64
+import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -21,6 +23,8 @@ class IncidentService(
         private val incidentRepository: IncidentRepository,
         private val userService: UserService
 ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     /**
      * Retrieves an incident by its ID.
@@ -38,7 +42,21 @@ class IncidentService(
      * @param id The ID of the incident to check.
      * @return True if the incident exists, false otherwise.
      */
-    fun existsIncidentById(id: String): Boolean = incidentRepository.findById(id).isPresent()
+    fun existsIncidentById(id: String): Boolean = incidentRepository.existsById(id)
+
+    /**
+     * Returns a list with the incidents that match the values in the given list
+     *
+     * @param types The list with the types that an incident mush have.
+     * @param states The list with the states that the incident must have.
+     * @param archived The archived value that the incident must have.
+     * @return The incidents that match the past criteria.
+     */
+    fun getFilterIncidents(
+            types: List<INCIDENT_TYPE>,
+            states: List<INCIDENT_STATE>,
+            archived: Boolean
+    ): List<Incident> = incidentRepository.getFilterIncidents(types, states, archived)
 
     /**
      * Creates a new incident with an initial "reported" state.
@@ -64,18 +82,25 @@ class IncidentService(
         val reportedState = SpecificState(LocalDate.now(), listOfEncodedImages(images))
         val states = States(reported = reportedState, inProgress = null, solved = null)
 
-        val newIncident =
-                Incident(
-                        id = null,
-                        ownerId = incidentInfo.ownerId,
-                        states = states,
-                        type = incidentInfo.type,
-                        description = incidentInfo.description,
-                        location = incidentInfo.location,
-                        archived = false
+        val newIncident: Incident =
+                incidentRepository.save(
+                        Incident(
+                                id = null,
+                                ownerId = incidentInfo.ownerId,
+                                states = states,
+                                type = incidentInfo.type,
+                                description = incidentInfo.description,
+                                location = incidentInfo.location,
+                                archived = false
+                        )
                 )
 
-        return incidentRepository.save(newIncident)
+        val newIncidentId: String =
+                newIncident.id
+                        ?: throw throw UrbanIncidentsException("Incident ID should not be null")
+
+        userService.addIncidentToUserList(newIncident.ownerId, newIncidentId)
+        return newIncident
     }
 
     /**
@@ -123,6 +148,37 @@ class IncidentService(
 
         return getIncidentById(updateRequest.id)
     }
+
+    /**
+     * Delete an incident by id. This operations is only valid if the given user is an admin user or
+     * if the user is trying to deleting its own incident.
+     *
+     * @param token The token of the user trying to delete.
+     * @param id The id of the incident to delete.
+     */
+    fun deleteIncident(token: String, id: String) {
+        val user: User = userService.getUserByToken(token)
+
+        if (!existsIncidentById(id)) {
+            throw IncidentNotFoundException()
+        }
+
+        if (user.role != USER_ROLE.ADMIN && (user.incidents == null || !user.incidents.contains(id))
+        ) {
+            throw UnauthorizedIncidentException()
+        }
+
+        val ownerID: String = getOwnerIdByIncidentId(id)
+        incidentRepository.deleteById(id)
+        userService.removeIncidentFromUserList(ownerID, id)
+    }
+
+    fun getOwnerIdByIncidentId(id: String): String =
+            incidentRepository.incidentOwnerByIncidentId(id)
+                    ?: throw InvalidIncidentIdException(
+                            "The incident with id: $id does not have an owner"
+                    )
+
     /**
      * Validates an incident update request before applying any changes.
      *
@@ -185,7 +241,8 @@ class IncidentService(
     private fun isNewArchivedStateValid(modifyArchivedValue: Boolean, userRole: USER_ROLE) {
         if (modifyArchivedValue && userRole != USER_ROLE.ADMIN) {
             throw InvalidIncidentUpdateException(
-                    "You can't modify the archived value of a publication if you are not an admin user"
+                    "You can't modify the archived value of a publication if you are not an admin user",
+                    HttpStatus.UNAUTHORIZED
             )
         }
     }

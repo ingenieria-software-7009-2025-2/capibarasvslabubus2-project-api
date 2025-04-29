@@ -1,6 +1,7 @@
 package com.unam.fciencias.urbanincidents.incident.repository
 
 import com.unam.fciencias.urbanincidents.enums.*
+import com.unam.fciencias.urbanincidents.incident.model.*
 import java.time.LocalDate
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint
 
@@ -11,4 +12,11 @@ interface IncidentRepositoryCustom {
   fun updateTypeById(id: String, type: INCIDENT_TYPE)
   fun updateLocationById(id: String, location: GeoJsonPoint)
   fun updateArchivedStateById(id: String, archivedState: Boolean)
+  fun getFilterIncidents(
+          types: List<INCIDENT_TYPE>,
+          states: List<INCIDENT_STATE>,
+          archived: Boolean
+  ): List<Incident>
+  fun deleteIncident(id: String)
+  fun incidentOwnerByIncidentId(id: String): String?
 }

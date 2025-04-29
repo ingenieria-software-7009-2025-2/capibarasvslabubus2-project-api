@@ -13,12 +13,14 @@ class UserExceptionHandler {
             EmailNotFoundException::class,
             UserNotFoundException::class,
             InvalidUserIdException::class,
+            UnauthorizedUserException::class,
     )
     fun handleUserExceptions(ex: UrbanIncidentsException): ResponseEntity<ErrorResponse> {
         val errorResponse =
                 ErrorResponse(
                         error = ex.message ?: "Unknown error",
-                        exceptionType = ex.javaClass.simpleName
+                        exceptionType = ex.javaClass.simpleName,
+                        status = ex.errorCode.value(),
                 )
         return ResponseEntity.status(ex.errorCode).body(errorResponse)
     }

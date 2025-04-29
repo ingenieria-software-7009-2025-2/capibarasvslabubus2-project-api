@@ -72,5 +72,5 @@ data class PatchIncidentRequest(
         val description: String?,
         val date: LocalDate?,
         val location: GeoJsonPoint?,
-        val archived: Boolean,
+        val archived: Boolean?,
 )
